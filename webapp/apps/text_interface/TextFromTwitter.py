@@ -1,5 +1,5 @@
 import tweepy
-from TextInterfaces.TextFrom import TextFrom
+from .TextFrom import TextFrom
 
 
 class TextFromTwitter(TextFrom):
