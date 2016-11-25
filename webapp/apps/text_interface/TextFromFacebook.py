@@ -1,5 +1,5 @@
 from facepy import GraphAPI
-from TextInterfaces.TextFrom import TextFrom
+from .TextFrom import TextFrom
 
 
 class TextFromFacebook(TextFrom):
