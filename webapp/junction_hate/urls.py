@@ -3,7 +3,7 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
 from rest_framework import routers
-from apps.text_api.views import ping, twitter_status
+from apps.text_api.views import ping, twitter_status, facebook_posts
 
 router = routers.DefaultRouter()
 
@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^ping', ping),
     url(r'^twitter_status', twitter_status),
+    url(r'^facebook_posts', facebook_posts),
 
     # url(r'^docs/', include('rest_framework_docs.urls')),
 
