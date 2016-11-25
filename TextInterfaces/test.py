@@ -1,8 +1,13 @@
-from TextInterfaces.TextFromTwitter import TextFromTwitter
+from TextInterfaces.TextFromFacebook import TextFromFacebook
 
 
 
-tft = TextFromTwitter()
-user = "abcd"
-status = tft.get_status_from_user(user=user,tweet_number=3)
-print(status)
+tff = TextFromFacebook()
+page = "DonaldTrump"
+posts = tff.get_posts_from_page(page_name=page,post_number=10)
+
+post="153080620724_10158184936910725"
+comments = tff.get_comments_from_post(post_id=post,comment_number=10)
+
+reactions = tff.get_reactions_from_post(post_id=post)
+print(reactions)
