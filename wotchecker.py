@@ -1,9 +1,8 @@
 import requests
-from typing import Dict
 
 
 class WoTResult:
-    def __init__(self, json:Dict):
+    def __init__(self, json):
         self.target = json['target']
         self.reputation = json["0"][0]
         self.trustworthiness = json["0"][1]
@@ -55,7 +54,7 @@ class WoTChecker:
         self._private_key = 'f4c9175c272adff6de0e968cecfebb51d0acbf83'
         self._api_url = 'http://api.mywot.com/0.4/public_link_json2'
 
-    def test_websites(self, *hosts: str) -> Dict:
+    def test_websites(self, *hosts: str):
         """
         Query Web of Trust API for given websites
         :param hosts: URLs to query about
@@ -71,7 +70,7 @@ class WoTChecker:
 
         if result.ok:
             content = result.json()
-            return [WoTResult(v) for v in content.values()]
+            return [WoTResult(v) for v in content.values() if '0' in v]
 
         return []
 
