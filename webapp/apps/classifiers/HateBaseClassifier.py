@@ -7,7 +7,7 @@ class HateBaseClassifier:
     """
 
     def __init__(self):
-        self.hatebase = pd.read_json("data/hatebase/vocabulary.json")
+        self.hatebase = pd.read_json("../data/hatebase/vocabulary.json")
 
     def classify(self, message):
         """
