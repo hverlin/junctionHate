@@ -2,6 +2,8 @@ from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
+from rest_framework import routers
+from rest_framework.reverse import reverse
 
 from apps.text_api.views import ping, twitter_status, facebook_posts, facebook_comments, facebook_reactions, \
     nltk_analysis, text_analysis_page, wot_checking, social_analysis
@@ -16,6 +18,7 @@ router.view_urls = [
     url(r'^facebook_reactions', facebook_reactions, name="Facebook reactions"),
     url(r'^facebook_posts', facebook_posts, name="Facebook posts"),
     url(r'^nltk_analysis', nltk_analysis, name="Nltk Analysis"),
+    url(r'^search_score', search_score, name="Search Score"),
     url(r'^wot_checking', wot_checking, name="WoT checking")
 ]
 

@@ -11,6 +11,8 @@ from apps.classifiers.NltkClassifier import NltkClassifier
 from apps.classifiers.WotChecker import WotChecker
 from apps.text_interface import TextFromFacebook as Facebook
 from apps.text_interface import TextFromTwitter as Twitter
+from apps.fact_checker import DuckduckgoSearch as DuckSearch
+from apps.fact_checker import WebSiteCredibility
 
 
 @api_view()
@@ -185,3 +187,16 @@ def social_analysis(request):
                       "analysis": arr,
                       "keys_analysis": mark_safe(keys),
                   })
+
+@api_view()
+def search_score(request, format=None):
+    """
+    Return a score compute in function of the websites get by a duckduckgo research
+
+    query params:
+    - search: search string
+    """
+    search = request.query_params.get("search")
+    website_liste = DuckSearch.search_on_html_duckduckgo(search=search)
+    score = WebSiteCredibility.compute_score_for_website_liste(website_list=website_liste)
+    return Response({"search": search,"score": score}, status=200)
