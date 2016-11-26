@@ -5,7 +5,8 @@ from django.contrib import admin
 from rest_framework import routers
 from rest_framework.reverse import reverse
 
-from apps.text_api.views import ping, twitter_status, facebook_posts, facebook_comments, facebook_reactions
+from apps.text_api.views import ping, twitter_status, facebook_posts, facebook_comments, facebook_reactions,\
+    nltk_classifier
 
 
 class HybridRouter(routers.DefaultRouter):
@@ -48,6 +49,7 @@ router.view_urls = [
     url(r'^facebook_comments', facebook_comments, name="facebook_comments"),
     url(r'^facebook_reactions', facebook_reactions, name="Facebook reactions"),
     url(r'^facebook_posts', facebook_posts, name="Facebook posts"),
+    url(r'^nltk_classifier', nltk_classifier, name="Nltk Classifier")
 ]
 
 urlpatterns = [

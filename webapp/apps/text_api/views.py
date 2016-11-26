@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from apps.text_interface import TextFromFacebook as Facebook
 from apps.text_interface import TextFromTwitter as Twitter
 
+from apps.classifiers.NltkClassifier import NltkClassifier
+
 
 @api_view()
 def ping(request):
@@ -73,3 +75,33 @@ def facebook_reactions(request, format=None):
     fb = Facebook.TextFromFacebook()
     reactions = fb.get_reactions_from_post(post_id=id)
     return Response({"reactions": reactions}, status=200)
+
+
+@api_view()
+def nltk_classifier(request: Request):
+    """
+    Return if a text is negative.
+
+    query params
+     - query: The text to query
+
+    response:
+     - negative: Boolean
+     - details: a dictionary: {
+         'compound': between -1 and 1
+         'neg': between 0 and 1
+         'neu': between 0 and 1
+         'pos': between 0 and 1
+     }
+    """
+    query = request.query_params.get("query")
+    classifier = NltkClassifier()
+
+    analyse = classifier.analyse_text(query)
+
+    result = {
+        "negative": analyse['compound'] < 0,
+        "details": analyse
+    }
+
+    return Response(result, status=200)
