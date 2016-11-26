@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from apps import WikidataQuery as Wq
+from apps.WikidataQuery import WikidataQuery as Wq
 from apps.classifiers.HateBaseClassifier import HateBaseClassifier
 from apps.classifiers.NltkClassifier import NltkClassifier
 from apps.classifiers.WotChecker import WotChecker
@@ -235,20 +235,50 @@ def search_score(request, format=None):
     - search: search string
     """
     search = request.query_params.get("search")
-    website_list,duck_search = DuckSearch.search_on_html_duckduckgo(search=search)
+    website_list, duck_search = DuckSearch.search_on_html_duckduckgo(search=search)
     scores = WebSiteCredibility.compute_score_for_website_liste(website_list=website_list)
-    return Response({"search": search, "scores": scores,"search_link":duck_search}, status=200)
+    return Response({"search": search, "scores": scores, "search_link": duck_search}, status=200)
 
+
+def get_political_qid(request, wikidata):
+    id_type = request.GET.get('id_type')
+
+    if id_type == "facebook":
+        facebook_id = request.GET.get('id')
+        res = wikidata.search_politician_with_facebook(facebook_id=facebook_id)
+
+    elif id_type == "twitter":
+        twitter_id = request.GET.get('id')
+        res = wikidata.search_politician_with_twitter(twitter_id=twitter_id)
+    else:
+        lastname = request.GET.get('lastname')
+        firstname = request.GET.get('firstname')
+
+        res = wikidata.search_politician(firstname=firstname, lastname=lastname)
+
+    if res:
+        return res
+    else:
+        return None
 
 
 def political_description(request):
-    lastname = request.GET.get('lastname')
-    firstname = request.GET.get('firstname')
+    wikidata = Wq()
+    res = get_political_qid(request=request, wikidata=wikidata)
+    if res:
+        name = res[0]
+        qid = res[1]
+        return render(request, 'analysis/political_description.html',
+                      {
+                          "poli_name": name,
+                          "poli_awards": wikidata.awards(qid),
+                          "poli_birthdate": wikidata.birthdate(qid),
+                          "poli_image": wikidata.image(qid),
+                          "poli_official_website": wikidata.official_website(qid),
+                          "poli_political_parties": wikidata.political_parties(qid)
+                      })
+    else:
+        return render(request, 'analysis/political_description.html',
+                      {
 
-    wq = Wq()
-    res = wq.search_politician(firstname=firstname,lastname=lastname)
-
-    return render(request, 'analysis/political_description.html',
-                  {
-                      "res": res
-                  })
+                      })
