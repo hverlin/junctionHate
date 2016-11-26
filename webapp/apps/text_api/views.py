@@ -189,6 +189,8 @@ def social_analysis(request):
 
     if f_page is not None:
         facebook_stats = facebook.get_nltk_statistic(id=f_page["id"])
+        if facebook_stats is None:
+            f_page = None
 
     stats["labels"] = mark_safe(["min", "mean", "max"]),
 
