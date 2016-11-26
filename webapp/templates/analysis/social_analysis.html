@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block body %}
+    <div id="poltical-info"></div>
     <section class="section">
         <div class="container">
             <h1 class="title has-text-centered">
@@ -160,6 +161,13 @@
                     }
                 }
             });
+        });
+
+        pi = $('#poltical-info');
+        $.get("/political_description?firstname=Donald&lastname=Trump", function (data) {
+            pi.html(data).hide();
+            firstTime = false;
+            pi.show('slow');
         });
 
     </script>
