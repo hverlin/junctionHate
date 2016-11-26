@@ -146,3 +146,39 @@ class WikidataQuery:
             }
             for row in results
         ]
+
+    def awards(self, qid:str):
+        """
+        Return the awards received by the person.
+
+        Return a list of dict (or None):
+        {
+            'qid': The QID of the award
+            'name': The designation of the award
+            'date': The date when the person won the award
+        }
+        """
+        query = """
+        SELECT ?award ?awardLabel ?date WHERE {
+          wd:Q22686 p:P166 [
+              ps:P166 ?award;
+              pq:P585 ?date;
+          ]
+
+          SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+        }
+        """
+
+        results = self._run_query(query)
+
+        if not results:
+            return None
+
+        return [
+            {
+                'qid': WikidataQuery._get_qid('award', row),
+                'name': WikidataQuery._get_string('awardLabel', row),
+                'date': WikidataQuery._get_date('date', row)
+            }
+            for row in results
+        ]
