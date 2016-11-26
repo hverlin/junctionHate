@@ -26,7 +26,7 @@ urlpatterns = [
 
     # API
     url(r'^api/', include(router.urls)),
-    url(r'^docs$', include('rest_framework_docs.urls')),
+    url(r'^docs/$', include('rest_framework_docs.urls')),
     url(r'^$', search_page, name="search page"),
     url(r'social_analysis$', social_analysis, name="social analysis page"),
     url(r'analysis$', text_analysis_page, name="analysis page"),
