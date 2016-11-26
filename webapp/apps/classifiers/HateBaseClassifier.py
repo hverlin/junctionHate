@@ -7,12 +7,11 @@ class HateBaseClassifier:
     Allows to classifiy given strings by appereance in the hatebase data.
     """
 
-    def __init__(self):
+    def __init__(self, data="apps/data/hatebase/vocabulary.json"):
         import os
         cwd = os.getcwd()
         print(cwd)
-        #self.hatebase = pd.read_json("apps/data/hatebase/vocabulary.json")
-        self.hatebase = pd.read_json("../data/hatebase/vocabulary.json")
+        self.hatebase = pd.read_json(data)
 
     def classify(self, message):
         """
