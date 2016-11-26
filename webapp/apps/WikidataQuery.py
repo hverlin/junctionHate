@@ -333,3 +333,44 @@ class WikidataQuery:
             }
             for row in results
         ]
+
+    def education_places(self, qid: str):
+        """
+        Query the eduaction places of the person
+
+        :return a list of dict (or None):
+        {
+            'qid': QID of the place
+            'name': English designation of the place
+            'start': Date when they entered at the place (can be None if not known)
+            'end': Date when they left it (or None if it still holds, or the date not known)
+        }
+        """
+        query = """
+        SELECT ?place ?placeLabel ?start ?end WHERE {{
+          wd:{0} p:P69 ?s.
+          ?s ps:P69 ?place.
+
+          OPTIONAL{{
+            ?s pq:P580 ?start.
+            ?s pq:P582 ?end.
+          }}
+
+          SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
+        }}
+        """.format(qid)
+
+        results = self._run_query(query)
+
+        if not results:
+            return None
+
+        return [
+            {
+                'qid': WikidataQuery._get_qid('place', row),
+                'start': WikidataQuery._get_date('start', row),
+                'end': WikidataQuery._get_date('end', row),
+                'name': WikidataQuery._get_string('placeLabel', row),
+            }
+            for row in results
+        ]
