@@ -16,6 +16,8 @@ from apps.text_interface import TextFromFacebook as Facebook
 from apps.text_interface import TextFromTwitter as Twitter
 from apps.text_interface.TextFromFacebook import TextFromFacebook
 from apps.text_interface.TextFromTwitter import TextFromTwitter
+from apps.fact_checker import DuckduckgoSearch as DuckSearch
+from apps.fact_checker import WebSiteCredibility
 
 
 @api_view()
@@ -161,12 +163,17 @@ def render_analysis_text(request, text):
     for (key, item) in analysis.items():
         arr.append(item)
         keys.append(key)
+
+    website_list, duck_search = DuckSearch.search_on_html_duckduckgo(search=text)
+    credibility = WebSiteCredibility.compute_score_for_website_liste(website_list=website_list)
     return render(request, 'analysis/text_analysis.html',
                   {
                       "text": text,
                       "analysis": arr,
                       "keys_analysis": mark_safe(keys),
-                      "bad_words": bad_words
+                      "bad_words": bad_words,
+                      "credibility": credibility,
+                      "duckduck_url": duck_search
                   })
 
 
@@ -237,7 +244,10 @@ def search_score(request, format=None):
     search = request.query_params.get("search")
     website_list, duck_search = DuckSearch.search_on_html_duckduckgo(search=search)
     scores = WebSiteCredibility.compute_score_for_website_liste(website_list=website_list)
-    return Response({"search": search, "scores": scores, "search_link": duck_search}, status=200)
+    return Response({
+        "search": search,
+        "scores": scores,
+        "search_link": duck_search}, status=200)
 
 
 def get_political_qid(request, wikidata):
