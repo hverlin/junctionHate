@@ -216,6 +216,13 @@ def social_analysis(request):
                       })
 
 
+def search_page(request):
+    return render(request, 'analysis/search.html',
+                  {
+
+                  })
+
+
 @api_view()
 def search_score(request, format=None):
     """
