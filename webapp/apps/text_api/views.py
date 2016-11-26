@@ -6,15 +6,16 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from apps import WikidataQuery as Wq
 from apps.classifiers.HateBaseClassifier import HateBaseClassifier
 from apps.classifiers.NltkClassifier import NltkClassifier
 from apps.classifiers.WotChecker import WotChecker
+from apps.fact_checker import DuckduckgoSearch as DuckSearch
+from apps.fact_checker import WebSiteCredibility
 from apps.text_interface import TextFromFacebook as Facebook
 from apps.text_interface import TextFromTwitter as Twitter
 from apps.text_interface.TextFromFacebook import TextFromFacebook
 from apps.text_interface.TextFromTwitter import TextFromTwitter
-from apps.fact_checker import DuckduckgoSearch as DuckSearch
-from apps.fact_checker import WebSiteCredibility
 
 
 @api_view()
@@ -237,3 +238,17 @@ def search_score(request, format=None):
     website_list,duck_search = DuckSearch.search_on_html_duckduckgo(search=search)
     scores = WebSiteCredibility.compute_score_for_website_liste(website_list=website_list)
     return Response({"search": search, "scores": scores,"search_link":duck_search}, status=200)
+
+
+
+def political_description(request):
+    lastname = request.GET.get('lastname')
+    firstname = request.GET.get('firstname')
+
+    wq = Wq()
+    res = wq.search_politician(firstname=firstname,lastname=lastname)
+
+    return render(request, 'analysis/political_description.html',
+                  {
+                      "res": res
+                  })
