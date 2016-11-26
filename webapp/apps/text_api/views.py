@@ -160,12 +160,17 @@ def render_analysis_text(request, text):
     for (key, item) in analysis.items():
         arr.append(item)
         keys.append(key)
+
+    website_list, duck_search = DuckSearch.search_on_html_duckduckgo(search=text)
+    credibility = WebSiteCredibility.compute_score_for_website_liste(website_list=website_list)
     return render(request, 'analysis/text_analysis.html',
                   {
                       "text": text,
                       "analysis": arr,
                       "keys_analysis": mark_safe(keys),
-                      "bad_words": bad_words
+                      "bad_words": bad_words,
+                      "credibility": credibility,
+                      "duckduck_url": duck_search
                   })
 
 
@@ -234,6 +239,9 @@ def search_score(request, format=None):
     - search: search string
     """
     search = request.query_params.get("search")
-    website_list,duck_search = DuckSearch.search_on_html_duckduckgo(search=search)
+    website_list, duck_search = DuckSearch.search_on_html_duckduckgo(search=search)
     scores = WebSiteCredibility.compute_score_for_website_liste(website_list=website_list)
-    return Response({"search": search, "scores": scores,"search_link":duck_search}, status=200)
+    return Response({
+        "search": search,
+        "scores": scores,
+        "search_link": duck_search}, status=200)
