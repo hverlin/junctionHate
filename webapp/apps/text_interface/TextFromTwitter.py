@@ -37,15 +37,28 @@ class TextFromTwitter():
     def get_nltk_statistic(self, user, tweet_number=10):
         classifier = NltkClassifier.NltkClassifier()
         tweets = self.get_status_from_user(user, tweet_number=tweet_number)
+        tweet_with_scores = []
         compound_scores = []
         for tweet in tweets:
             scores = classifier.analyse_text(tweet['message'])
+            tweet_with_scores.append({
+                'message': tweet['message'],
+                'scores': scores
+            })
             compound_scores.append(scores['compound'])
-        return scipy.stats.describe(compound_scores)
+
+        stats = scipy.stats.describe(compound_scores)
+        return {
+            "tweets": tweet_with_scores,
+            "stats": {
+                "mean": stats.mean,
+                "minmax": stats.minmax
+            }
+        }
 
 
 if __name__ == '__main__':
     twitter = TextFromTwitter()
-    print(twitter.get_nltk_statistic("potus", 200))
-    print(twitter.get_nltk_statistic("realdonaldtrump", 200))
-    print(twitter.get_nltk_statistic("matthewheimbach", 200))
+    print(twitter.get_nltk_statistic("potus", 20))
+    # print(twitter.get_nltk_statistic("realdonaldtrump", 200))
+    # print(twitter.get_nltk_statistic("matthewheimbach", 200))
