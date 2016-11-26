@@ -45,7 +45,7 @@ router = HybridRouter(trailing_slash=False)
 router.view_urls = [
     url(r'^ping', ping, name="Ping"),
     url(r'^twitter_status', twitter_status, name="Twitter status"),
-    url(r'^facebook_comments', facebook_comments, name="facebook_comments"),
+    url(r'^facebook_comments', facebook_comments, name="Facebook_comments"),
     url(r'^facebook_reactions', facebook_reactions, name="Facebook reactions"),
     url(r'^facebook_posts', facebook_posts, name="Facebook posts"),
 ]
