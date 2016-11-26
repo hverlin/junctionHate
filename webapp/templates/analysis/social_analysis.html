@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 
 {% block body %}
-    <div id="poltical-info"></div>
+
+    <div id="poltical-info">
+        <button class="button top-button is-success hidden" id="show-information" onclick="showInformation()">
+            Show more information
+        </button>
+    </div>
+
     <section class="section">
         <div class="container">
             <h1 class="title has-text-centered">
@@ -31,7 +37,8 @@
                         <div style="margin-top: 20px"></div>
 
                         {% for tweet in twitter.tweets %}
-                            <div class="box" id="tweetBox{{ forloop.counter0 }}" onclick="addCredibility(this, '{{ tweet.message }}')">
+                            <div class="box" id="tweetBox{{ forloop.counter0 }}"
+                                 onclick="addCredibility(this, '{{ tweet.message }}')">
                                 <article class="media">
                                     <div class="media-left">
                                         <figure class="image is-64x64">
@@ -84,7 +91,8 @@
                     <div class="column">
                         <h2 class="title is-5 has-text-centered">Facebook: {{ f_page.name }} </h2>
                         {% for post in facebook.posts %}
-                            <div class="box" id="facebookBox{{ forloop.counter0 }}" onclick="addCredibility(this, '{{ post.message }}')">
+                            <div class="box" id="facebookBox{{ forloop.counter0 }}"
+                                 onclick="addCredibility(this, '{{ post.message }}')">
                                 <article class="media">
                                     <div class="media-content">
                                         <div class="content">
@@ -179,23 +187,46 @@
             });
         });
 
-    function addCredibility(elem, message) {
-        var BASE_URL = "http://localhost:8000/"
-        //# $.ajax({
-        //#     url: BASE_URL + "api/search_score?search=" + message
-        //# }).done(function(data) {
-        //#     alert(data['scores']);
-        //#     $(elem).append(data);
-        //# })
-        //$(elem).find("credibility-list").toggle();
+        function addCredibility(elem, message) {
+            var BASE_URL = "http://localhost:8000/"
+            //# $.ajax({
+            //#     url: BASE_URL + "api/search_score?search=" + message
+            //# }).done(function(data) {
+            //#     alert(data['scores']);
+            //#     $(elem).append(data);
+            //# })
+            //$(elem).find("credibility-list").toggle();
 
-        $.get("api/search_score?search=" + message, function( data ) {
-            for (cred in data.scores) {
-                $(elem).find("#credibility-list").append("<li style='display: inline; padding : 0 0.5em'>" + cred + ": " + data.scores[cred] + "</li>");
-            }
-            $(elem).find("#url-nav").append('<a href="' + data.search_link +'"></a>');
-        });
-    }
+            $.get("api/search_score?search=" + message, function (data) {
+                for (cred in data.scores) {
+                    $(elem).find("#credibility-list").append("<li style='display: inline; padding : 0 0.5em'>" + cred + ": " + data.scores[cred] + "</li>");
+                }
+                $(elem).find("#url-nav").append('<a href="' + data.search_link + '"></a>');
+            });
+        }
+
+        var politcal_data = null;
+        {% if t_user %}
+            $.get("/political_description?id={{ t_user.screen_name }}&id_type=twitter", function (data) {
+                $("#show-information").removeClass("hidden");
+                politcal_data = data;
+            });
+        {% elif f_page %}
+            $.get("/political_description?id={{ f_page.name }}&id_type=facebook", function (data) {
+                $("#show-information").removeClass("hidden");
+                politcal_data = data;
+            });
+        {% endif %}
+
+
+        pi = $('#poltical-info');
+
+        function showInformation() {
+            $("html, body").animate({scrollTop: 0}, "slow");
+
+            pi.html(politcal_data).hide();
+            pi.show('slow');
+        }
 
     </script>
 {% endblock %}
