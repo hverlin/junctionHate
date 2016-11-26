@@ -302,3 +302,34 @@ class WikidataQuery:
             }
             for row in results
         ]
+
+    def occupations(self, qid: str):
+        """
+        Query the occupations of this person
+
+        :return a list of dict (or None):
+        {
+           'qid': QID of the occupation
+           'name': English designation of the occupation
+        }
+        """
+        query = """
+        SELECT ?occupation ?occupationLabel WHERE {{
+          wd:{0} wdt:P106 ?occupation.
+
+          SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
+        }}
+        """.format(qid)
+
+        results = self._run_query(query)
+
+        if not results:
+            return None
+
+        return [
+            {
+                'qid': WikidataQuery._get_qid('occupation', row),
+                'name': WikidataQuery._get_string('occupationLabel', row),
+            }
+            for row in results
+        ]
