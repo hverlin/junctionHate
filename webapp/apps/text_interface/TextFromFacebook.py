@@ -1,3 +1,4 @@
+from django.utils.safestring import mark_safe
 from facepy import GraphAPI
 import scipy.stats
 from apps.classifiers import NltkClassifier
@@ -18,8 +19,7 @@ class TextFromFacebook():
         return answer["id"]
 
     # return a list with all the post message and their id
-    def get_posts_from_page(self, page_name, post_number):
-        id = self.get_page_id(page_name)
+    def get_posts_from_page(self, id, post_number):
 
         post_list = []
 
@@ -59,9 +59,9 @@ class TextFromFacebook():
 
         return reaction_count
 
-    def get_nltk_statistic(self, page, post_number=30):
+    def get_nltk_statistic(self, id, post_number=30):
         classifier = NltkClassifier.NltkClassifier()
-        posts = self.get_posts_from_page(page, post_number)
+        posts = self.get_posts_from_page(id, post_number)
         posts_with_scores = []
         compound_scores = []
         for post in posts:
@@ -75,8 +75,8 @@ class TextFromFacebook():
         return {
             "posts": posts_with_scores,
             "stats": {
-                "mean": stats.mean,
-                "minmax": stats.minmax
+                "labels": mark_safe(["min", "mean", "max"]),
+                "scores": [stats.minmax[0], stats.mean, stats.minmax[1]],
             }
         }
 
@@ -94,6 +94,6 @@ class TextFromFacebook():
 
 if __name__ == '__main__':
     facebook = TextFromFacebook()
-    print(facebook.search_first_page("qsl;fqf;gpd,fvk,qdbqdb"))
+    print(facebook.search_first_page("trump"))
     '''print(facebook.get_nltk_statistic("DonaldTrump", 10))
     print(facebook.get_nltk_statistic("barackobama", 10))'''
