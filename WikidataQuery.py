@@ -14,12 +14,13 @@ class WikidataQuery:
         try:
             self._sparql.setQuery(query)
             return self._sparql.query().convert()['results']['bindings']
-        except:
+        except BaseException as e:
+            print(e)
             return None
 
     @staticmethod
     def _get_string(attribute, row):
-        return row[attribute]['value']
+        return row[attribute]['value'] if attribute in row else None
 
     @staticmethod
     def _get_qid(attribute, row):
@@ -31,7 +32,6 @@ class WikidataQuery:
 
         if not raw_date:
             return None
-
 
         return raw_date[8:10] + '/' + raw_date[5:7] + '/' + raw_date[:4]
 
@@ -51,7 +51,7 @@ class WikidataQuery:
 
               SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
             }}
-            LIMIT 10
+            LIMIT 1
             """.format(firstname, lastname)
 
         politicians = self._run_query(query)
@@ -96,3 +96,53 @@ class WikidataQuery:
 
         return self._get_string('image', results[0])
 
+    def official_website(self, qid:str) -> str:
+        query = """
+            SELECT ?site WHERE {{
+                wd:{0} wdt:P856 ?site.
+            }}
+        """.format(qid)
+        results = self._run_query(query)
+
+        if not results:
+            return None
+
+        return self._get_string('site', results[0])
+
+    def political_parties(self, qid:str):
+        """
+        Returns a list of dict (or None):
+        {
+            'qid': QID of the party
+            'name': English name of the party
+            'start': Date when entered in the party
+            'end': Date when left it (or None if still in it)
+        }
+        """
+        query = """
+        SELECT ?party ?partyLabel ?start ?end WHERE {{
+          wd:{0} p:P102 ?s.
+          ?s ps:P102 ?party.
+          ?s pq:P580 ?start.
+
+          OPTIONAL{{
+            ?s pq:P582 ?end.
+          }}
+
+          SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
+        }}
+        """.format(qid)
+        results = self._run_query(query)
+
+        if not results:
+            return None
+
+        return [
+            {
+                'qid': WikidataQuery._get_qid('party', row),
+                'start': WikidataQuery._get_date('start', row),
+                'end': WikidataQuery._get_date('end', row),
+                'name': WikidataQuery._get_string('partyLabel', row),
+            }
+            for row in results
+        ]
