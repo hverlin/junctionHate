@@ -58,7 +58,7 @@ class TextFromTwitter():
             scores = classifier.analyse_text(tweet['message'])
             tweet_with_scores.append({
                 'message': tweet['message'],
-                'scores': scores
+                'scores': scores,
             })
             compound_scores.append(scores['compound'])
 
