@@ -1,8 +1,6 @@
 from facepy import GraphAPI
-from .TextFrom import TextFrom
 
-
-class TextFromFacebook(TextFrom):
+class TextFromFacebook():
     def __init__(self):
         app_id = "350491891978824"
         app_secret = "7ac945d57ec6ba7396bd770dd5474ab7"
