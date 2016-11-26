@@ -170,9 +170,15 @@ def text_analysis_page(request):
 def social_analysis(request):
     nltk = NltkClassifier()
 
+    twitter_stats = None
+    facebook_stats = None
+
     text = request.GET.get('text')
     twitter = TextFromTwitter()
-    twitter_stats = twitter.get_nltk_statistic(user=text)
+    t_user = twitter.search_first_user(search_user=text)
+
+    if t_user is not None:
+        twitter_stats = twitter.get_nltk_statistic(user=t_user["screen_name"])
 
     if not text:
         return JsonResponse({"error": "please provide text"})
@@ -186,7 +192,8 @@ def social_analysis(request):
 
     return render(request, 'analysis/social_analysis.html',
                   {
-                      "twitter": "twitter_stats",
+                      "twitter": twitter_stats,
+                      "t_user": t_user,
                       "facebook": "",
                       "analysis": arr,
                       "keys_analysis": mark_safe(keys),

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block body %}
     <section class="section">
         <div class="container">
@@ -9,12 +10,46 @@
             <div class="columns">
                 <div class="column">
                     {% if twitter %}
-                        <h2 class="title is-5">Twitter: </h2>
-                        <pre>
-                        <code>
-{{ twitter }}
-                        </code>
-                        </pre>
+                        <h2 class="title is-5">Twitter: {{ t_user.screen_name }}</h2>
+
+                        {% for tweet in twitter.tweets %}
+                            <div class="box">
+                                <article class="media">
+                                    <div class="media-left">
+                                        <figure class="image is-64x64">
+                                            <img src="{{ t_user.profile_image_url }}" alt="Image">
+                                        </figure>
+                                    </div>
+                                    <div class="media-content">
+                                        <div class="content">
+                                            <p>
+                                                <strong>{{ t_user.screen_name }}</strong>
+                                                <br>
+                                                {{ tweet.message }}
+                                            </p>
+                                        </div>
+                                        <nav class="level">
+                                            <div class="level-left">
+                                                <ul style="list-style: none">
+                                                    <li class="sentiment" style="display: inline; padding : 0 0.5em">
+                                                        <strong>Neutral</strong>: {{ tweet.scores.neu }}
+                                                    </li>
+                                                    <li style="display: inline; padding : 0 0.5em">
+                                                        <strong>Compound</strong>: {{ tweet.scores.compound }}
+                                                    </li>
+                                                    <li style="display: inline; padding : 0 0.5em">
+                                                        <strong style="color: red">Negative</strong>: {{ tweet.scores.negative }}
+                                                    </li>
+                                                    <li style="display: inline; padding : 0 0.5em">
+                                                        <strong style="color: navy">Positive</strong>: {{ tweet.scores.pos }}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </nav>
+                                    </div>
+                                </article>
+                            </div>
+                        {% endfor %}
                     {% endif %}
 
                     {% if facebook %}
@@ -30,6 +65,7 @@
             </div>
         </div>
     </section>
+
 {% endblock %}
 
 
@@ -38,9 +74,9 @@
     <script>
         //noinspection UnterminatedStatementJS
         document.addEventListener("DOMContentLoaded", function (event) {
-            var data = JSON.parse("{{analysis}}");
+            var data = JSON.parse("{{twitter.stats.scores}}");
 
-            var keys_analysis = JSON.parse("{{keys_analysis}}".replace(/'/g, '"'));
+            var keys_analysis = JSON.parse("{{twitter.stats.labels}}".replace(/'/g, '"'));
 
             var ctx = document.getElementById("myChart");
             var myChart = new Chart(ctx, {
