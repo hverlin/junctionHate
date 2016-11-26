@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 
 from apps.text_api.views import ping, twitter_status, facebook_posts, facebook_comments, facebook_reactions, \
-    nltk_analysis, text_analysis_page, wot_checking, social_analysis, search_score, search_page
+    nltk_analysis, text_analysis_page, wot_checking, social_analysis, search_score, search_page, political_description
 from junction_hate.hybrid_router import HybridRouter
 
 router = HybridRouter(trailing_slash=False)
@@ -26,9 +26,10 @@ urlpatterns = [
 
     # API
     url(r'^api/', include(router.urls)),
-    url(r'^docs$', include('rest_framework_docs.urls')),
+    url(r'^docs$/', include('rest_framework_docs.urls')),
     url(r'^$', search_page, name="search page"),
     url(r'social_analysis$', social_analysis, name="social analysis page"),
+    url(r'political_description$', political_description, name="political_description page"),
     url(r'analysis$', text_analysis_page, name="analysis page"),
 ]
 

@@ -6,9 +6,12 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from apps.WikidataQuery import WikidataQuery as Wq
 from apps.classifiers.HateBaseClassifier import HateBaseClassifier
 from apps.classifiers.NltkClassifier import NltkClassifier
 from apps.classifiers.WotChecker import WotChecker
+from apps.fact_checker import DuckduckgoSearch as DuckSearch
+from apps.fact_checker import WebSiteCredibility
 from apps.text_interface import TextFromFacebook as Facebook
 from apps.text_interface import TextFromTwitter as Twitter
 from apps.text_interface.TextFromFacebook import TextFromFacebook
@@ -245,3 +248,47 @@ def search_score(request, format=None):
         "search": search,
         "scores": scores,
         "search_link": duck_search}, status=200)
+
+
+def get_political_qid(request, wikidata):
+    id_type = request.GET.get('id_type')
+
+    if id_type == "facebook":
+        facebook_id = request.GET.get('id')
+        res = wikidata.search_politician_with_facebook(facebook_id=facebook_id)
+
+    elif id_type == "twitter":
+        twitter_id = request.GET.get('id')
+        res = wikidata.search_politician_with_twitter(twitter_id=twitter_id)
+    else:
+        lastname = request.GET.get('lastname')
+        firstname = request.GET.get('firstname')
+
+        res = wikidata.search_politician(firstname=firstname, lastname=lastname)
+
+    if res:
+        return res
+    else:
+        return None
+
+
+def political_description(request):
+    wikidata = Wq()
+    res = get_political_qid(request=request, wikidata=wikidata)
+    if res:
+        name = res[0]
+        qid = res[1]
+        return render(request, 'analysis/political_description.html',
+                      {
+                          "poli_name": name,
+                          "poli_awards": wikidata.awards(qid),
+                          "poli_birthdate": wikidata.birthdate(qid),
+                          "poli_image": wikidata.image(qid),
+                          "poli_official_website": wikidata.official_website(qid),
+                          "poli_political_parties": wikidata.political_parties(qid)
+                      })
+    else:
+        return render(request, 'analysis/political_description.html',
+                      {
+
+                      })

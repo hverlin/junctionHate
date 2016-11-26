@@ -12,7 +12,7 @@
             <div class="columns">
                 <div class="column">
                     <h2 class="title is-5">Text:</h2>
-                    <p> {{ text }}</p>
+                    <p style="text-align: justify"> {{ text }}</p>
 
                     {% if bad_words %}
                         <hr>
@@ -111,9 +111,10 @@
                 },
                 options: {
                     scales: {
-                        yAxes: [{
+                        xAxes: [{
                             ticks: {
-                                beginAtZero: true
+                                min: -1,
+                                max: 1
                             }
                         }]
                     }
