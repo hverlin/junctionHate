@@ -29,13 +29,17 @@ class WikidataQuery:
     def _get_date(attribute, row):
         raw_date = WikidataQuery._get_string(attribute, row)
 
-        return raw_date[:10]
+        if not raw_date:
+            return None
+
+
+        return raw_date[8:10] + '/' + raw_date[5:7] + '/' + raw_date[:4]
 
     def search_politician(self, firstname: str, lastname: str) -> (str, str):
         """
         Search for a politician
 
-        :return: (complete name: str, QID: str)
+        :return: (complete name: str, QID: str) or None
         """
         query = """
             # Find politician by name
@@ -59,6 +63,11 @@ class WikidataQuery:
             self._get_qid('politician', politicians[0])
 
     def birthdate(self, qid:str) -> str:
+        """
+        Query the birth date of a person.
+        :param qid: QID of the person
+        :return: The date represented as a string 'dd/MM/YYYY' or None
+        """
         query = """
             SELECT ?date WHERE {{
                 wd:{0} wdt:P569 ?date.
@@ -70,3 +79,20 @@ class WikidataQuery:
             return None
 
         return self._get_date('date', results[0])
+
+    def image(self, qid:str) -> str:
+        """
+        Return the URL of the image or None.
+        """
+        query = """
+            SELECT ?image WHERE {{
+                wd:{0} wdt:P18 ?image.
+            }}
+        """.format(qid)
+        results = self._run_query(query)
+
+        if not results:
+            return None
+
+        return self._get_string('image', results[0])
+
