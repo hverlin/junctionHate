@@ -73,7 +73,7 @@ class TextFromFacebook():
             compound_scores.append(scores['compound'])
         stats = scipy.stats.describe(compound_scores)
         return {
-            "tweets": posts_with_scores,
+            "posts": posts_with_scores,
             "stats": {
                 "mean": stats.mean,
                 "minmax": stats.minmax
