@@ -15,4 +15,4 @@ def search_on_html_duckduckgo(search):
         if link.get('href'):
             final_website_list.append(link.get('href'))
 
-    return final_website_list
+    return final_website_list,request
