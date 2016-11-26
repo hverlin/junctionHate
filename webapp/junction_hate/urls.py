@@ -6,7 +6,7 @@ from rest_framework import routers
 from rest_framework.reverse import reverse
 
 from apps.text_api.views import ping, twitter_status, facebook_posts, facebook_comments, facebook_reactions, \
-    nltk_analysis
+    nltk_analysis, search_score
 
 
 class HybridRouter(routers.DefaultRouter):
@@ -50,6 +50,7 @@ router.view_urls = [
     url(r'^facebook_reactions', facebook_reactions, name="Facebook reactions"),
     url(r'^facebook_posts', facebook_posts, name="Facebook posts"),
     url(r'^nltk_analysis', nltk_analysis, name="Nltk Analysis"),
+    url(r'^search_score', search_score, name="Search Score"),
 ]
 
 urlpatterns = [

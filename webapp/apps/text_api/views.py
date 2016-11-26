@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from apps.classifiers.NltkClassifier import NltkClassifier
 from apps.text_interface import TextFromFacebook as Facebook
 from apps.text_interface import TextFromTwitter as Twitter
+from apps.fact_checker import DuckduckgoSearch as DuckSearch
+from apps.fact_checker import WebSiteCredibility
 
 
 @api_view()
@@ -87,3 +89,18 @@ def nltk_analysis(request):
     text = request.query_params.get("text")
     analysis = nltk.analyse_text(text)
     return Response({"reactions": analysis}, status=200)
+
+
+
+@api_view()
+def search_score(request, format=None):
+    """
+    Return a score compute in function of the websites get by a duckduckgo research
+
+    query params:
+    - search: search string
+    """
+    search = request.query_params.get("search")
+    website_liste = DuckSearch.search_on_html_duckduckgo(search=search)
+    score = WebSiteCredibility.compute_score_for_website_liste(website_list=website_liste)
+    return Response({"search": search,"score": score}, status=200)
