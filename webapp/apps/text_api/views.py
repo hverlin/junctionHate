@@ -1,4 +1,5 @@
 import numpy as np
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
 from rest_framework.decorators import api_view
@@ -10,7 +11,6 @@ from apps.classifiers.NltkClassifier import NltkClassifier
 from apps.classifiers.WotChecker import WotChecker
 from apps.text_interface import TextFromFacebook as Facebook
 from apps.text_interface import TextFromTwitter as Twitter
-
 
 
 @api_view()
@@ -102,6 +102,7 @@ def nltk_analysis(request):
     analysis = nltk.analyse_text(text)
     return Response({"reactions": analysis}, status=200)
 
+
 @api_view()
 def wot_checking(request):
     """
@@ -136,10 +137,14 @@ def wot_checking(request):
 
     return Response({"results": results}, status=200)
 
+
 def analysis_page(request):
     nltk = NltkClassifier()
 
     text = request.GET.get('text')
+    if not text:
+        return JsonResponse({"error": "please provide text"})
+
     analysis = nltk.analyse_text(text)
 
     hate_classifier = HateBaseClassifier()
