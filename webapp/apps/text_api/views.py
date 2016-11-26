@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from apps.classifiers.NltkClassifier import NltkClassifier
 from apps.text_interface import TextFromFacebook as Facebook
 from apps.text_interface import TextFromTwitter as Twitter
 
@@ -77,5 +78,12 @@ def facebook_reactions(request, format=None):
 
 
 @api_view()
-def reddits():
-    pass
+def nltk_analysis(request):
+    """
+    query params:
+    - text: text to analyze
+    """
+    nltk = NltkClassifier()
+    text = request.query_params.get("text")
+    analysis = nltk.analyse_text(text)
+    return Response({"reactions": analysis}, status=200)
