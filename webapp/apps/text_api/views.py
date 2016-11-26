@@ -1,13 +1,14 @@
+import numpy as np
 from django.shortcuts import render
+from django.utils.safestring import mark_safe
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from apps.classifiers.HateBaseClassifier import HateBaseClassifier
 from apps.classifiers.NltkClassifier import NltkClassifier
 from apps.text_interface import TextFromFacebook as Facebook
 from apps.text_interface import TextFromTwitter as Twitter
-
-from apps.classifiers.NltkClassifier import NltkClassifier
 
 
 @api_view()
@@ -101,6 +102,25 @@ def nltk_analysis(request):
 
 
 def analysis_page(request):
-    text = request.GET.get('text')
-    return render(request, 'analysis/index.html', {"text": text})
+    nltk = NltkClassifier()
 
+    text = request.GET.get('text')
+    analysis = nltk.analyse_text(text)
+
+    hate_classifier = HateBaseClassifier()
+    hate_word_index = hate_classifier.classify(text)
+    bad_words = np.array(text.split())[np.where(hate_word_index)]
+
+    arr = []
+    keys = []
+    for (key, item) in analysis.items():
+        arr.append(item)
+        keys.append(key)
+
+    return render(request, 'analysis/index.html',
+                  {
+                      "text": text,
+                      "analysis": arr,
+                      "keys_analysis": mark_safe(keys),
+                      "bad_words": bad_words
+                  })
