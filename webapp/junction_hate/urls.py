@@ -6,7 +6,7 @@ from rest_framework import routers
 from rest_framework.reverse import reverse
 
 from apps.text_api.views import ping, twitter_status, facebook_posts, facebook_comments, facebook_reactions, \
-    nltk_analysis
+    nltk_analysis, analysis_page
 
 
 class HybridRouter(routers.DefaultRouter):
@@ -59,6 +59,7 @@ urlpatterns = [
     # API
     url(r'^api/', include(router.urls)),
     url(r'^', include('rest_framework_docs.urls')),
+    url(r'analysis$', analysis_page, name="analysis page")
 ]
 
 if settings.DEBUG:

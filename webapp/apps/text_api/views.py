@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -87,3 +88,8 @@ def nltk_analysis(request):
     text = request.query_params.get("text")
     analysis = nltk.analyse_text(text)
     return Response({"reactions": analysis}, status=200)
+
+
+def analysis_page(request):
+    text = request.GET.get('text')
+    return render(request, 'analysis/index.html', {"text": text})
