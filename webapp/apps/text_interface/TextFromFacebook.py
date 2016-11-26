@@ -1,8 +1,9 @@
 from facepy import GraphAPI
-from .TextFrom import TextFrom
+import scipy.stats
+from webapp.apps.classifiers import NltkClassifier
 
 
-class TextFromFacebook(TextFrom):
+class TextFromFacebook():
     def __init__(self):
         app_id = "350491891978824"
         app_secret = "7ac945d57ec6ba7396bd770dd5474ab7"
@@ -26,7 +27,6 @@ class TextFromFacebook(TextFrom):
         posts = self.graph.get(path=request, limit=post_number)
         for p in posts["data"]:
             if "message" in p:
-                self.string_list.append(p["message"])
                 post = {"id": p["id"], "message": p["message"]}
                 post_list.append(post)
 
@@ -58,3 +58,21 @@ class TextFromFacebook(TextFrom):
             reaction_count[rp] = number_react
 
         return reaction_count
+
+    def get_nltk_statistic(self, page, post_number=30):
+        classifier = NltkClassifier.NltkClassifier()
+        posts = self.get_posts_from_page(page, post_number)
+        compound_scores = []
+        for post in posts:
+            scores = classifier.analyse_text(post['message'])
+            compound_scores.append(scores['compound'])
+            if scores['compound'] < -0.6:
+                print(post['message'])
+        return scipy.stats.describe(compound_scores)
+
+if __name__ == '__main__':
+    facebook = TextFromFacebook()
+    print(facebook.get_nltk_statistic("DonaldTrump", 100))
+    print(facebook.get_nltk_statistic("barackobama", 100))
+
+

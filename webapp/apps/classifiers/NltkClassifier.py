@@ -1,3 +1,5 @@
+from typing import Dict
+
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 
@@ -9,7 +11,7 @@ class NltkClassifier:
     def __init__(self):
         self._analyser = SentimentIntensityAnalyzer()
 
-    def analyse_text(self, txt: str):
+    def analyse_text(self, txt: str) -> Dict[str, float]:
         """
         Analyse a text.
         :param txt: a string
@@ -18,14 +20,14 @@ class NltkClassifier:
         """
         return self._analyser.polarity_scores(txt)
 
-    def is_negative(self, txt: str):
+    def is_negative(self, txt: str) -> bool:
         """
         Return True if the text is negative
         """
         res = self.analyse_text(txt)
         return res['compound'] < 0
 
-    def is_positive(self, txt: str):
+    def is_positive(self, txt: str) -> bool:
         """
         Return True if the text is positive
         """
