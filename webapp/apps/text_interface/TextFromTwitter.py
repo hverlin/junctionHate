@@ -39,16 +39,14 @@ class TextFromTwitter():
         if not users:
             return None
         else:
-            return {"id":users[0].id,
-                    "followers_count":users[0].followers_count,
-                    "profile_image_url":users[0].profile_image_url_https,
-                    "tweet_number":users[0].statuses_count,
-                    "location":users[0].location,
-                    "screen_name":users[0].screen_name,
-                    "description":users[0].description
+            return {"id": users[0].id,
+                    "followers_count": users[0].followers_count,
+                    "profile_image_url": users[0].profile_image_url_https,
+                    "tweet_number": users[0].statuses_count,
+                    "location": users[0].location,
+                    "screen_name": users[0].screen_name,
+                    "description": users[0].description
                     }
-
-
 
     def get_nltk_statistic(self, user, tweet_number=10):
         classifier = NltkClassifier.NltkClassifier()

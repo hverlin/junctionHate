@@ -80,8 +80,20 @@ class TextFromFacebook():
             }
         }
 
+    def search_first_page(self, search_page):
+        request = "search?q=" + search_page + "&type=page"
+        pages = self.graph.get(path=request, limit=1)
+        if not pages["data"]:
+            return None
+        else:
+            page_id = pages["data"][0]["id"]
+            fields = "description,about,cover,fan_count,general_info,name,username,picture"
+            page = self.graph.get(path=page_id, fields=fields)
+            return page
+
 
 if __name__ == '__main__':
     facebook = TextFromFacebook()
-    print(facebook.get_nltk_statistic("DonaldTrump", 10))
-    print(facebook.get_nltk_statistic("barackobama", 10))
+    print(facebook.search_first_page("qsl;fqf;gpd,fvk,qdbqdb"))
+    '''print(facebook.get_nltk_statistic("DonaldTrump", 10))
+    print(facebook.get_nltk_statistic("barackobama", 10))'''
