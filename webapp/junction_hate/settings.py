@@ -7,6 +7,7 @@ from django.contrib.admin import AdminSite
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEBUG = True
+API_URL = "http://localhost:8000/"
 
 ALLOWED_HOSTS = []
 
