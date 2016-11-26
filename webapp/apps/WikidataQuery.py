@@ -161,7 +161,7 @@ class WikidataQuery:
         {
             'qid': QID of the party
             'name': English name of the party
-            'start': Date when entered in the party
+            'start': Date when entered in the party (can be None if not known)
             'end': Date when left it (or None if still in it)
         }
         """
@@ -169,9 +169,9 @@ class WikidataQuery:
         SELECT ?party ?partyLabel ?start ?end WHERE {{
           wd:{0} p:P102 ?s.
           ?s ps:P102 ?party.
-          ?s pq:P580 ?start.
 
           OPTIONAL{{
+            ?s pq:P580 ?start.
             ?s pq:P582 ?end.
           }}
 
@@ -201,15 +201,17 @@ class WikidataQuery:
         {
             'qid': The QID of the award
             'name': The designation of the award
-            'date': The date when the person won the award
+            'date': The date when the person won the award (can be None if not known)
         }
         """
         query = """
         SELECT ?award ?awardLabel ?date WHERE {{
-          wd:{0} p:P166 [
-              ps:P166 ?award;
-              pq:P585 ?date;
-          ]
+          wd:{0} p:P166 ?s.
+
+          ?s ps:P166 ?award.
+          OPTIONAL {{
+            ?s pq:P585 ?date.
+          }}
 
           SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
         }}
@@ -237,7 +239,7 @@ class WikidataQuery:
         {
             'qid': QID of the position
             'name': English designation of the position
-            'start': Date when they entered at the position
+            'start': Date when they entered at the position (can be None if not known)
             'end': Date when they left it (or None if it still holds)
         }
         """
@@ -245,9 +247,9 @@ class WikidataQuery:
         SELECT ?position ?positionLabel ?start ?end WHERE {{
           wd:{0} p:P39 ?s.
           ?s ps:P39 ?position.
-          ?s pq:P580 ?start.
 
           OPTIONAL{{
+            ?s pq:P580 ?start.
             ?s pq:P582 ?end.
           }}
 
