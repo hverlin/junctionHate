@@ -1,5 +1,35 @@
 {% extends "base.html" %}
 
 {% block body %}
-    Search
+    <section class="section">
+        <div class="container">
+            <h1 class="title has-text-centered">
+                Search Page
+            </h1>
+
+            <div class="columns">
+                <div class="column">
+                    <input class="input" placeholder="Search query" type="text" id="query" />
+                </div>
+            </div>
+            <div class="column">
+                <button class="button is-primary" id="submit">Analyze Text</button>
+                <button class="button is-primary" id="submitSocial">Analyze Social</button>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block script %}
+    <script>
+        var BASE_URL = "http://localhost:8000/";
+        document.getElementById("submit").onclick = function(event) {
+            query = document.getElementById("query").value;
+            window.location = BASE_URL + "analysis?text=" + query;
+        };
+        document.getElementById("submitSocial").onclick = function(event) {
+            query = document.getElementById("query").value;
+            window.location = BASE_URL + "social_analysis?text=" + query;
+        };
+    </script>
 {% endblock %}
