@@ -1,6 +1,6 @@
 from facepy import GraphAPI
 import scipy.stats
-from webapp.apps.classifiers import NltkClassifier
+from apps.classifiers import NltkClassifier
 
 
 class TextFromFacebook():
@@ -70,9 +70,8 @@ class TextFromFacebook():
                 print(post['message'])
         return scipy.stats.describe(compound_scores)
 
+
 if __name__ == '__main__':
     facebook = TextFromFacebook()
     print(facebook.get_nltk_statistic("DonaldTrump", 100))
     print(facebook.get_nltk_statistic("barackobama", 100))
-
-

@@ -2,7 +2,7 @@ import tweepy
 import numpy as np
 import scipy.stats
 
-from webapp.apps.classifiers import NltkClassifier
+from apps.classifiers import NltkClassifier
 
 
 class TextFromTwitter():
@@ -43,11 +43,9 @@ class TextFromTwitter():
             compound_scores.append(scores['compound'])
         return scipy.stats.describe(compound_scores)
 
+
 if __name__ == '__main__':
     twitter = TextFromTwitter()
     print(twitter.get_nltk_statistic("potus", 200))
-    print(twitter.get_nltk_statistic("realdonaldtrump", 200 ))
-    print(twitter.get_nltk_statistic("matthewheimbach", 200 ))
-
-
-
+    print(twitter.get_nltk_statistic("realdonaldtrump", 200))
+    print(twitter.get_nltk_statistic("matthewheimbach", 200))
