@@ -138,7 +138,7 @@ def wot_checking(request):
     return Response({"results": results}, status=200)
 
 
-def analysis_page(request):
+def text_analysis_page(request):
     nltk = NltkClassifier()
 
     text = request.GET.get('text')
@@ -148,19 +148,40 @@ def analysis_page(request):
     analysis = nltk.analyse_text(text)
 
     hate_classifier = HateBaseClassifier()
-    hate_word_index = hate_classifier.classify(text)
-    bad_words = np.array(text.split())[np.where(hate_word_index)]
+    bad_words = hate_classifier.classify_with_info(text)
 
-    arr = []
-    keys = []
+    arr, keys = [], []
     for (key, item) in analysis.items():
         arr.append(item)
         keys.append(key)
 
-    return render(request, 'analysis/index.html',
+    return render(request, 'analysis/text_analysis.html',
                   {
                       "text": text,
                       "analysis": arr,
                       "keys_analysis": mark_safe(keys),
                       "bad_words": bad_words
+                  })
+
+
+def social_analysis(request):
+    nltk = NltkClassifier()
+
+    text = request.GET.get('text')
+    if not text:
+        return JsonResponse({"error": "please provide text"})
+
+    analysis = nltk.analyse_text(text)
+
+    arr, keys = [], []
+    for (key, item) in analysis.items():
+        arr.append(item)
+        keys.append(key)
+
+    return render(request, 'analysis/social_analysis.html',
+                  {
+                      "twitter": "",
+                      "facebook": "",
+                      "analysis": arr,
+                      "keys_analysis": mark_safe(keys),
                   })

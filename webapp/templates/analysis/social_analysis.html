@@ -3,21 +3,18 @@
     <section class="section">
         <div class="container">
             <h1 class="title has-text-centered">
-                Analysis
+                Social Analysis
             </h1>
 
             <div class="columns">
                 <div class="column">
-                    <h2 class="title is-5">Text:</h2>
-                    <p> {{ text }}</p>
-
-                    {% if bad_words %}
-                        <hr>
-
-                        <h2 class="title is-5">Hate words:</h2>
-                        <p> {{ bad_words }}</p>
+                    {% if twitter %}
+                        <h2 class="title is-5">Twitter: {{ twitter }}</h2>
                     {% endif %}
 
+                    {% if facebook %}
+                        <h2 class="title is-5">Twitter: {{ facebook }}</h2>
+                    {% endif %}
                 </div>
                 <div class="column">
                     <h2 class="title is-5 has-text-centered">Sentiment Analysis</h2>
