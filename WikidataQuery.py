@@ -54,13 +54,59 @@ class WikidataQuery:
             LIMIT 1
             """.format(firstname, lastname)
 
-        politicians = self._run_query(query)
+        results = self._run_query(query)
 
-        if not politicians:
+        if not results:
             return None
 
-        return self._get_string('politicianLabel', politicians[0]),\
-            self._get_qid('politician', politicians[0])
+        return self._get_string('politicianLabel', results[0]),\
+            self._get_qid('politician', results[0])
+
+    def search_politician_with_facebook(self, facebook_id: str) -> (str, str):
+        """
+        Search for a politician with their Facebook ID
+
+        :return: (complete name: str, QID: str) or None
+        """
+        query = """
+        SELECT ?politician ?politicianLabel WHERE {{
+            ?politician wdt:P2013 "{0}";
+                        wdt:P106 wd:Q82955.
+
+            SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
+        }}
+        """.format(facebook_id)
+
+        results = self._run_query(query)
+
+        if not results:
+            return None
+
+        return self._get_string('politicianLabel', results[0]),\
+            self._get_qid('politician', results[0])
+
+    def search_politician_with_twitter(self, twitter_id: str) -> (str, str):
+        """
+        Search for a politician with their Twitter username
+
+        :return: (complete name: str, QID: str) or None
+        """
+        query = """
+        SELECT ?politician ?politicianLabel WHERE {{
+            ?politician wdt:P2002 "{0}";
+                        wdt:P106 wd:Q82955.
+
+            SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
+        }}
+        """.format(twitter_id)
+
+        results = self._run_query(query)
+
+        if not results:
+            return None
+
+        return self._get_string('politicianLabel', results[0]),\
+            self._get_qid('politician', results[0])
 
     def birthdate(self, qid:str) -> str:
         """
@@ -159,15 +205,15 @@ class WikidataQuery:
         }
         """
         query = """
-        SELECT ?award ?awardLabel ?date WHERE {
-          wd:Q22686 p:P166 [
+        SELECT ?award ?awardLabel ?date WHERE {{
+          wd:{0} p:P166 [
               ps:P166 ?award;
               pq:P585 ?date;
           ]
 
-          SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-        }
-        """
+          SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
+        }}
+        """.format(qid)
 
         results = self._run_query(query)
 
