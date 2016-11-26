@@ -16,7 +16,11 @@ class HateBaseClassifier:
         :param message:
         :return: list of booleans for every word
         """
-        return list(map(self.is_hate_word, message.split()))
+        try:
+            return list(map(self.is_hate_word, message.split()))
+        except Exception:
+            print(message)
+
 
     def is_hate_word(self, word):
         """
@@ -26,4 +30,5 @@ class HateBaseClassifier:
         """
         reg_w = "^{0};|^{0}$".format(word)
         return len(self.hatebase[(self.hatebase["variants"].str.match(reg_w, na=False)) | (self.hatebase["vocabulary"] == word)]) > 0
+
 
