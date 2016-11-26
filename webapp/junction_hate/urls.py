@@ -2,8 +2,6 @@ from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
-from rest_framework import routers
-from rest_framework.reverse import reverse
 
 from apps.text_api.views import ping, twitter_status, facebook_posts, facebook_comments, facebook_reactions, \
     nltk_analysis, text_analysis_page, wot_checking, social_analysis, search_score

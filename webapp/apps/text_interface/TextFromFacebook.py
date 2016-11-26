@@ -62,16 +62,26 @@ class TextFromFacebook():
     def get_nltk_statistic(self, page, post_number=30):
         classifier = NltkClassifier.NltkClassifier()
         posts = self.get_posts_from_page(page, post_number)
+        posts_with_scores = []
         compound_scores = []
         for post in posts:
             scores = classifier.analyse_text(post['message'])
+            posts_with_scores.append({
+                'message': post['message'],
+                'scores': scores
+            })
             compound_scores.append(scores['compound'])
-            if scores['compound'] < -0.6:
-                print(post['message'])
-        return scipy.stats.describe(compound_scores)
+        stats = scipy.stats.describe(compound_scores)
+        return {
+            "tweets": posts_with_scores,
+            "stats": {
+                "mean": stats.mean,
+                "minmax": stats.minmax
+            }
+        }
 
 
 if __name__ == '__main__':
     facebook = TextFromFacebook()
-    print(facebook.get_nltk_statistic("DonaldTrump", 100))
-    print(facebook.get_nltk_statistic("barackobama", 100))
+    print(facebook.get_nltk_statistic("DonaldTrump", 10))
+    print(facebook.get_nltk_statistic("barackobama", 10))
