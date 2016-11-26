@@ -228,3 +228,44 @@ class WikidataQuery:
             }
             for row in results
         ]
+
+    def positions_held(self, qid: str):
+        """
+        Query the positions held by the person
+
+        :return a list of dict (or None):
+        {
+            'qid': QID of the position
+            'name': English designation of the position
+            'start': Date when they entered at the position
+            'end': Date when they left it (or None if it still holds)
+        }
+        """
+        query = """
+        SELECT ?position ?positionLabel ?start ?end WHERE {{
+          wd:{0} p:P39 ?s.
+          ?s ps:P39 ?position.
+          ?s pq:P580 ?start.
+
+          OPTIONAL{{
+            ?s pq:P582 ?end.
+          }}
+
+          SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
+        }}
+        """.format(qid)
+
+        results = self._run_query(query)
+
+        if not results:
+            return None
+
+        return [
+            {
+                'qid': WikidataQuery._get_qid('position', row),
+                'start': WikidataQuery._get_date('start', row),
+                'end': WikidataQuery._get_date('end', row),
+                'name': WikidataQuery._get_string('positionLabel', row),
+            }
+            for row in results
+        ]
