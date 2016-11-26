@@ -11,6 +11,7 @@ from apps.classifiers.NltkClassifier import NltkClassifier
 from apps.classifiers.WotChecker import WotChecker
 from apps.text_interface import TextFromFacebook as Facebook
 from apps.text_interface import TextFromTwitter as Twitter
+from apps.text_interface.TextFromFacebook import TextFromFacebook
 from apps.text_interface.TextFromTwitter import TextFromTwitter
 from apps.fact_checker import DuckduckgoSearch as DuckSearch
 from apps.fact_checker import WebSiteCredibility
@@ -142,22 +143,23 @@ def wot_checking(request):
 
 
 def text_analysis_page(request):
-    nltk = NltkClassifier()
-
     text = request.GET.get('text')
     if not text:
         return JsonResponse({"error": "please provide text"})
 
-    analysis = nltk.analyse_text(text)
+    return render_analysis_text(request, text)
 
+
+def render_analysis_text(request, text):
+    nltk = NltkClassifier()
+
+    analysis = nltk.analyse_text(text)
     hate_classifier = HateBaseClassifier()
     bad_words = hate_classifier.classify_with_info(text)
-
     arr, keys = [], []
     for (key, item) in analysis.items():
         arr.append(item)
         keys.append(key)
-
     return render(request, 'analysis/text_analysis.html',
                   {
                       "text": text,
@@ -168,35 +170,56 @@ def text_analysis_page(request):
 
 
 def social_analysis(request):
+    text = request.GET.get('text')
+    if not text:
+        return JsonResponse({"error": "please provide text"})
+
     nltk = NltkClassifier()
 
-    twitter_stats = None
-    facebook_stats = None
+    twitter_stats, facebook_stats, stats = None, None, {}
 
-    text = request.GET.get('text')
     twitter = TextFromTwitter()
     t_user = twitter.search_first_user(search_user=text)
 
     if t_user is not None:
         twitter_stats = twitter.get_nltk_statistic(user=t_user["screen_name"])
 
-    if not text:
-        return JsonResponse({"error": "please provide text"})
+    facebook = TextFromFacebook()
+    f_page = facebook.search_first_page(search_page=text)
 
-    analysis = nltk.analyse_text(text)
+    if f_page is not None:
+        facebook_stats = facebook.get_nltk_statistic(id=f_page["id"])
 
-    arr, keys = [], []
-    for (key, item) in analysis.items():
-        arr.append(item)
-        keys.append(key)
+    stats["labels"] = mark_safe(["min", "mean", "max"]),
 
-    return render(request, 'analysis/social_analysis.html',
+    if t_user and f_page:
+        stats["scores"] = [
+            np.min([twitter_stats["stats"]["scores"][0], facebook_stats["stats"]["scores"][0]]),
+            np.mean([twitter_stats["stats"]["scores"][1], facebook_stats["stats"]["scores"][1]]),
+            np.max([twitter_stats["stats"]["scores"][2], facebook_stats["stats"]["scores"][2]]),
+        ]
+    elif t_user is not None:
+        stats["scores"] = twitter_stats["stats"]["scores"]
+    else:
+        stats["scores"] = facebook_stats["stats"]["scores"]
+
+    if t_user is None and f_page is None:
+        return render_analysis_text(request, text)
+    else:
+        return render(request, 'analysis/social_analysis.html',
+                      {
+                          "twitter": twitter_stats,
+                          "t_user": t_user,
+                          "facebook": facebook_stats,
+                          "f_page": f_page,
+                          "stats": stats
+                      })
+
+
+def search_page(request):
+    return render(request, 'analysis/search.html',
                   {
-                      "twitter": twitter_stats,
-                      "t_user": t_user,
-                      "facebook": "",
-                      "analysis": arr,
-                      "keys_analysis": mark_safe(keys),
+
                   })
 
 

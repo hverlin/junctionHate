@@ -9,8 +9,25 @@
 
             <div class="columns">
                 <div class="column">
-                    {% if twitter %}
-                        <h2 class="title is-5">Twitter: {{ t_user.screen_name }}</h2>
+                    <canvas id="myChart" width="100%" height="40px"></canvas>
+                </div>
+                {% if facebook %}
+                    <div class="column">
+                        <img src="{{ f_page.cover.source }}"
+                             style="display: block;margin-left: auto;  margin-right: auto;">
+                        <div style="margin-top: 20px"></div>
+                    </div>
+                {% endif %}
+            </div>
+
+
+            <div class="columns">
+                {% if twitter %}
+
+                    <div class="column">
+                        <h2 class="title is-5 has-text-centered">Twitter: {{ t_user.screen_name }}</h2>
+
+                        <div style="margin-top: 20px"></div>
 
                         {% for tweet in twitter.tweets %}
                             <div class="box">
@@ -50,17 +67,48 @@
                                 </article>
                             </div>
                         {% endfor %}
-                    {% endif %}
 
-                    {% if facebook %}
-                        <h2 class="title is-5">Twitter: {{ facebook }}</h2>
-                    {% endif %}
-                </div>
-                <div class="column">
-                    <h2 class="title is-5 has-text-centered">Sentiment Analysis</h2>
+                    </div>
+                {% endif %}
 
-                    <canvas id="myChart" width="100%" height="80px"></canvas>
-                </div>
+                {% if facebook %}
+                    <div class="column">
+                        <h2 class="title is-5 has-text-centered">Facebook: {{ f_page.name }} </h2>
+                        {% for post in facebook.posts %}
+                            <div class="box">
+                                <article class="media">
+                                    <div class="media-content">
+                                        <div class="content">
+                                            <p>
+                                                <strong>{{ f_page.username }}</strong>
+                                                <br>
+                                                {{ post.message }}
+                                            </p>
+                                        </div>
+                                        <nav class="level">
+                                            <div class="level-left">
+                                                <ul style="list-style: none">
+                                                    <li class="sentiment" style="display: inline; padding : 0 0.5em">
+                                                        <strong>Neutral</strong>: {{ post.scores.neu }}
+                                                    </li>
+                                                    <li style="display: inline; padding : 0 0.5em">
+                                                        <strong>Compound</strong>: {{ post.scores.compound }}
+                                                    </li>
+                                                    <li style="display: inline; padding : 0 0.5em">
+                                                        <strong style="color: red">Negative</strong>: {{ post.scores.negative }}
+                                                    </li>
+                                                    <li style="display: inline; padding : 0 0.5em">
+                                                        <strong style="color: navy">Positive</strong>: {{ post.scores.pos }}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </nav>
+                                    </div>
+                                </article>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
 
             </div>
         </div>
@@ -74,9 +122,9 @@
     <script>
         //noinspection UnterminatedStatementJS
         document.addEventListener("DOMContentLoaded", function (event) {
-            var data = JSON.parse("{{twitter.stats.scores}}");
+            var data = JSON.parse("{{stats.scores}}");
 
-            var keys_analysis = JSON.parse("{{twitter.stats.labels}}".replace(/'/g, '"'));
+            var keys_analysis = ["min", "mean", "max"];
 
             var ctx = document.getElementById("myChart");
             var myChart = new Chart(ctx, {
@@ -103,9 +151,10 @@
                 },
                 options: {
                     scales: {
-                        yAxes: [{
+                        xAxes: [{
                             ticks: {
-                                beginAtZero: true
+                                min: -1,
+                                max: 1
                             }
                         }]
                     }
