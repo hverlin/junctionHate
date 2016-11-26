@@ -233,5 +233,5 @@ def search_score(request, format=None):
     """
     search = request.query_params.get("search")
     website_liste = DuckSearch.search_on_html_duckduckgo(search=search)
-    score = WebSiteCredibility.compute_score_for_website_liste(website_list=website_liste)
-    return Response({"search": search, "score": score}, status=200)
+    scores = WebSiteCredibility.compute_score_for_website_liste(website_list=website_liste)
+    return Response({"search": search, "scores": scores}, status=200)
