@@ -6,7 +6,7 @@ from rest_framework import routers
 from rest_framework.reverse import reverse
 
 from apps.text_api.views import ping, twitter_status, facebook_posts, facebook_comments, facebook_reactions, \
-    nltk_analysis, text_analysis_page, wot_checking, social_analysis
+    nltk_analysis, text_analysis_page, wot_checking, social_analysis, search_score
 from junction_hate.hybrid_router import HybridRouter
 
 router = HybridRouter(trailing_slash=False)

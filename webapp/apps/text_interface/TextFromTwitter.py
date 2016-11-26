@@ -34,6 +34,22 @@ class TextFromTwitter():
     def get_status_from_user(self, user, tweet_number=1):
         return self.get_status_from_user_from_tweet_id(user=user, tweet_number=tweet_number)
 
+    def search_first_user(self, search_user):
+        users = self.api.search_users(q=search_user, count=1)
+        if not users:
+            return None
+        else:
+            return {"id":users[0].id,
+                    "followers_count":users[0].followers_count,
+                    "profile_image_url":users[0].profile_image_url_https,
+                    "tweet_number":users[0].statuses_count,
+                    "location":users[0].location,
+                    "screen_name":users[0].screen_name,
+                    "description":users[0].description
+                    }
+
+
+
     def get_nltk_statistic(self, user, tweet_number=10):
         classifier = NltkClassifier.NltkClassifier()
         tweets = self.get_status_from_user(user, tweet_number=tweet_number)
@@ -46,6 +62,7 @@ class TextFromTwitter():
 
 if __name__ == '__main__':
     twitter = TextFromTwitter()
+    print(twitter.search_first_user("donald trump"))
     print(twitter.get_nltk_statistic("potus", 200))
     print(twitter.get_nltk_statistic("realdonaldtrump", 200))
     print(twitter.get_nltk_statistic("matthewheimbach", 200))
