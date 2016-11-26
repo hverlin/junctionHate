@@ -1,6 +1,7 @@
 import tweepy
 import numpy as np
 import scipy.stats
+from django.utils.safestring import mark_safe
 
 from apps.classifiers import NltkClassifier
 
@@ -65,8 +66,8 @@ class TextFromTwitter():
         return {
             "tweets": tweet_with_scores,
             "stats": {
-                "mean": stats.mean,
-                "minmax": stats.minmax
+                "labels": mark_safe(["min", "mean", "max"]),
+                "scores": [stats.minmax[0], stats.mean, stats.minmax[1]],
             }
         }
 
