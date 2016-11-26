@@ -4,10 +4,10 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from apps.classifiers.NltkClassifier import NltkClassifier
+from apps.classifiers.WotChecker import WotChecker
 from apps.text_interface import TextFromFacebook as Facebook
 from apps.text_interface import TextFromTwitter as Twitter
 
-from apps.classifiers.NltkClassifier import NltkClassifier
 
 
 @api_view()
@@ -99,6 +99,39 @@ def nltk_analysis(request):
     analysis = nltk.analyse_text(text)
     return Response({"reactions": analysis}, status=200)
 
+@api_view()
+def wot_checking(request):
+    """
+    Query Web of Trust API for given websites
+
+    Query params:
+     - hosts: URLs of at most 100 host separated by '/' and ending by '/'
+
+    Response: A list of Json objects following the schema below (one for each successful request)
+    {
+        'target': string (the URL host),
+        'negative': Boolean,
+        'undefined': Boolean,
+        'positive': Boolean,
+        'categories': {
+            'malware': Boolean,
+            'phishing': Boolean,
+            'scam': Boolean,
+            'potentially_illegal': Boolean,
+            'misleading_or_unethical': Boolean,
+            'privacy_risk': Boolean,
+            'suspicious': Boolean,
+            'hate': Boolean,
+            'spam': Boolean,
+            'pup': Boolean,
+        }
+    }
+    """
+    wot_checker = WotChecker()
+    hosts = request.query_params.get("hosts")
+    results = wot_checker.test_websites_concatenated(hosts)
+
+    return Response({"results": results}, status=200)
 
 def analysis_page(request):
     text = request.GET.get('text')
