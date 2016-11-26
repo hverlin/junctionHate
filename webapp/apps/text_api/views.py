@@ -11,6 +11,7 @@ def ping(request):
     return Response({'success': 'pong'}, status=200)
 
 
+@api_view()
 def twitter_status(request):
     """
     Return a list of twitter status for a user
@@ -73,3 +74,8 @@ def facebook_reactions(request, format=None):
     fb = Facebook.TextFromFacebook()
     reactions = fb.get_reactions_from_post(post_id=id)
     return Response({"reactions": reactions}, status=200)
+
+
+@api_view()
+def reddits():
+    pass
