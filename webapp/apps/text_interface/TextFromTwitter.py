@@ -1,8 +1,6 @@
 import tweepy
-from .TextFrom import TextFrom
 
-
-class TextFromTwitter(TextFrom):
+class TextFromTwitter():
     def __init__(self):
         consumer_key = 'VqLtcUiHKrWy8YXfgWODFyFoe'
         consumer_secret = '7YNxcOhtHRjpq1ybx6RRE28WId2028z6S2y69L3bN6rmJJggx1'
@@ -15,8 +13,22 @@ class TextFromTwitter(TextFrom):
 
         self.api = tweepy.API(auth)
 
-    def get_status_from_user(self, user, tweet_number=1):
-        status = self.api.user_timeline(screen_name=user, count=tweet_number)
+
+    def get_status_from_user_from_tweet_id(self, user, tweet_number=1, tweet_id=""):
+        if tweet_id == "":
+            status = self.api.user_timeline(screen_name=user, count=tweet_number)
+        else:
+            status = self.api.user_timeline(screen_name=user, count=tweet_number, max_id=tweet_id)
+
+        tweet_list = []
+
         for s in status:
-            self.string_list.append(s.text)
-        return self.string_list
+            tweet = {"id": s.id, "message": s.text}
+            tweet_list.append(tweet)
+        return tweet_list
+
+
+    def get_status_from_user(self, user, tweet_number=1):
+        return self.get_status_from_user_from_tweet_id(user=user,tweet_number=tweet_number)
+
+
