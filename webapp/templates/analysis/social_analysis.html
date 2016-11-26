@@ -9,7 +9,12 @@
             <div class="columns">
                 <div class="column">
                     {% if twitter %}
-                        <h2 class="title is-5">Twitter: {{ twitter }}</h2>
+                        <h2 class="title is-5">Twitter: </h2>
+                        <pre>
+                        <code>
+{{ twitter }}
+                        </code>
+                        </pre>
                     {% endif %}
 
                     {% if facebook %}

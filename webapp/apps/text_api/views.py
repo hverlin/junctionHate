@@ -11,6 +11,7 @@ from apps.classifiers.NltkClassifier import NltkClassifier
 from apps.classifiers.WotChecker import WotChecker
 from apps.text_interface import TextFromFacebook as Facebook
 from apps.text_interface import TextFromTwitter as Twitter
+from apps.text_interface.TextFromTwitter import TextFromTwitter
 from apps.fact_checker import DuckduckgoSearch as DuckSearch
 from apps.fact_checker import WebSiteCredibility
 
@@ -170,6 +171,9 @@ def social_analysis(request):
     nltk = NltkClassifier()
 
     text = request.GET.get('text')
+    twitter = TextFromTwitter()
+    twitter_stats = twitter.get_nltk_statistic(user=text)
+
     if not text:
         return JsonResponse({"error": "please provide text"})
 
@@ -182,11 +186,12 @@ def social_analysis(request):
 
     return render(request, 'analysis/social_analysis.html',
                   {
-                      "twitter": "",
+                      "twitter": "twitter_stats",
                       "facebook": "",
                       "analysis": arr,
                       "keys_analysis": mark_safe(keys),
                   })
+
 
 @api_view()
 def search_score(request, format=None):
@@ -199,4 +204,4 @@ def search_score(request, format=None):
     search = request.query_params.get("search")
     website_liste = DuckSearch.search_on_html_duckduckgo(search=search)
     score = WebSiteCredibility.compute_score_for_website_liste(website_list=website_liste)
-    return Response({"search": search,"score": score}, status=200)
+    return Response({"search": search, "score": score}, status=200)
