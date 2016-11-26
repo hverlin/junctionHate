@@ -7,6 +7,8 @@ from apps.classifiers.NltkClassifier import NltkClassifier
 from apps.text_interface import TextFromFacebook as Facebook
 from apps.text_interface import TextFromTwitter as Twitter
 
+from apps.classifiers.NltkClassifier import NltkClassifier
+
 
 @api_view()
 def ping(request):
@@ -83,6 +85,14 @@ def nltk_analysis(request):
     """
     query params:
     - text: text to analyze
+    result: {
+        'reactions': {
+            'compound': between -1 and 1,
+            'neg': between 0 and 1,
+            'neu': between 0 and 1,
+            'pos': between 0 and 1
+        }
+    }
     """
     nltk = NltkClassifier()
     text = request.query_params.get("text")
@@ -93,3 +103,4 @@ def nltk_analysis(request):
 def analysis_page(request):
     text = request.GET.get('text')
     return render(request, 'analysis/index.html', {"text": text})
+
