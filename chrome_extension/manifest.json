@@ -22,6 +22,8 @@
   },
   "permissions": [
     "clipboardRead",
-    "contextMenus"
+    "contextMenus",
+    "debugger",
+    "notifications"
   ]
 }

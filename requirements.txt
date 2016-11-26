@@ -32,6 +32,7 @@ python-dateutil==2.5.3
 pytz==2016.4
 requests==2.10.0
 requests-oauthlib==0.7.0
+scipy==0.18.1
 six==1.10.0
 sqlparse==0.1.19
 tablib==0.11.2

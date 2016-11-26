@@ -1,4 +1,5 @@
 from typing import Dict
+import scipy.stats
 
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
@@ -16,9 +17,12 @@ class NltkClassifier:
         Analyse a text.
         :param txt: a string
         :return: A dictionary with 4 entries:
-            'compound', 'neg', 'neu', 'pos'
+            'compound', 'negative', 'neu', 'pos'
         """
-        return self._analyser.polarity_scores(txt)
+        score = self._analyser.polarity_scores(txt)
+        score['negative'] = score['neg'] * (-1)
+        score.pop("neg", None)
+        return score
 
     def is_negative(self, txt: str) -> bool:
         """
@@ -33,3 +37,16 @@ class NltkClassifier:
         """
         res = self.analyse_text(txt)
         return res['compound'] > 0
+
+    def get_statistic(self, messages):
+        """
+        Returns statistic on compound value on a list of messages
+
+        :param messages: list of messages
+        :return: DescribeResult
+        """
+        compound_scores = []
+        for message in messages:
+            scores = self.analyse_text(message)
+            compound_scores.append(scores['compound'])
+        return scipy.stats.describe(compound_scores)

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block body %}
+    <section class="section">
+        <div class="container">
+            <h1 class="title has-text-centered">
+                Social Analysis
+            </h1>
+
+            <div class="columns">
+                <div class="column">
+                    {% if twitter %}
+                        <h2 class="title is-5">Twitter: {{ twitter }}</h2>
+                    {% endif %}
+
+                    {% if facebook %}
+                        <h2 class="title is-5">Twitter: {{ facebook }}</h2>
+                    {% endif %}
+                </div>
+                <div class="column">
+                    <h2 class="title is-5 has-text-centered">Sentiment Analysis</h2>
+
+                    <canvas id="myChart" width="100%" height="80px"></canvas>
+                </div>
+
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+
+{% block script %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.min.js"></script>
+    <script>
+        //noinspection UnterminatedStatementJS
+        document.addEventListener("DOMContentLoaded", function (event) {
+            var data = JSON.parse("{{analysis}}");
+
+            var keys_analysis = JSON.parse("{{keys_analysis}}".replace(/'/g, '"'));
+
+            var ctx = document.getElementById("myChart");
+            var myChart = new Chart(ctx, {
+                type: 'horizontalBar',
+                data: {
+                    labels: keys_analysis,
+                    datasets: [{
+                        label: 'value',
+                        data: data,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255,99,132,1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        });
+
+    </script>
+{% endblock %}
