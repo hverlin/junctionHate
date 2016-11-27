@@ -212,6 +212,7 @@ def social_analysis(request):
     if t_user is not None:
         twitter_stats = twitter.get_nltk_statistic(user=t_user["screen_name"])
 
+
     facebook = TextFromFacebook()
     f_page = facebook.search_first_page(search_page=text)
 
@@ -222,25 +223,28 @@ def social_analysis(request):
 
     stats["labels"] = mark_safe(["min", "mean", "max"]),
 
-    if t_user and f_page:
+    try:
+        if t_user and f_page:
 
-        ss, created = SocialSearch.objects.get_or_create(search=text.title())
-        ss.number += 1
-        ss.picture_url = t_user["profile_image_url"]
-        ss.save()
+            ss, created = SocialSearch.objects.get_or_create(search=text.title())
+            ss.number += 1
+            ss.picture_url = t_user["profile_image_url"]
+            ss.save()
 
-        stats["scores"] = [
-            np.min([twitter_stats["stats"]["scores"][0], facebook_stats["stats"]["scores"][0]]),
-            np.mean([twitter_stats["stats"]["scores"][1], facebook_stats["stats"]["scores"][1]]),
-            np.max([twitter_stats["stats"]["scores"][2], facebook_stats["stats"]["scores"][2]]),
-        ]
-    elif t_user is not None:
-        stats["scores"] = twitter_stats["stats"]["scores"]
-    else:
-        stats["scores"] = facebook_stats["stats"]["scores"]
+            stats["scores"] = [
+                np.min([twitter_stats["stats"]["scores"][0], facebook_stats["stats"]["scores"][0]]),
+                np.mean([twitter_stats["stats"]["scores"][1], facebook_stats["stats"]["scores"][1]]),
+                np.max([twitter_stats["stats"]["scores"][2], facebook_stats["stats"]["scores"][2]]),
+            ]
+        elif t_user is not None:
+            stats["scores"] = twitter_stats["stats"]["scores"]
+        elif f_page is not None:
+            stats["scores"] = facebook_stats["stats"]["scores"]
+    except:
+        pass
 
     if t_user is None and f_page is None:
-        return render_analysis_text(request, text)
+        return render_analysis_text(request, text, None)
     else:
         return render(request, 'analysis/social_analysis.html',
                       {

@@ -62,14 +62,31 @@ class TextFromTwitter():
             })
             compound_scores.append(scores['compound'])
 
-        stats = scipy.stats.describe(compound_scores)
-        return {
-            "tweets": tweet_with_scores,
-            "stats": {
-                "labels": mark_safe(["min", "mean", "max"]),
-                "scores": [stats.minmax[0], stats.mean, stats.minmax[1]],
-            }
+        stats = {
+            "labels": [""],
+            "scores": [""]
         }
+
+        try:
+            stats = scipy.stats.describe(compound_scores)
+        except:
+            pass
+
+        try:
+            ret = {
+                "tweets": tweet_with_scores,
+                "stats": {
+                    "labels": mark_safe(["min", "mean", "max"]),
+                    "scores": [stats.minmax[0], stats.mean, stats.minmax[1]],
+                }
+            }
+        except:
+            ret = {
+                "tweets": tweet_with_scores,
+                "stats": stats
+            }
+
+        return ret
 
 
 if __name__ == '__main__':
