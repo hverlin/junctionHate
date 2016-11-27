@@ -1,4 +1,5 @@
 import requests
+import re
 from bs4 import BeautifulSoup
 
 
@@ -15,4 +16,12 @@ def search_on_html_duckduckgo(search):
         if link.get('href'):
             final_website_list.append(link.get('href'))
 
-    return final_website_list,request
+    title_list = parsed_html.body.find_all('a', attrs={'class': 'result__a'})
+    click_bait = 0
+    for a in title_list:
+        res = re.search("\d+ ", a.text)
+        if res:
+            click_bait += 1
+
+
+    return final_website_list,request,click_bait

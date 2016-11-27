@@ -235,8 +235,12 @@ def search_score(request, format=None):
     - search: search string
     """
     search = request.query_params.get("search")
-    website_list, duck_search = DuckSearch.search_on_html_duckduckgo(search=search)
+    website_list, duck_search, click_bait = DuckSearch.search_on_html_duckduckgo(search=search)
     scores = WebSiteCredibility.compute_score_for_website_liste(website_list=website_list)
+
+    if click_bait:
+        scores["CLICKBAIT"] += click_bait
+
     return Response({"search": search, "scores": scores, "search_link": duck_search}, status=200)
 
 
