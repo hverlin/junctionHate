@@ -38,51 +38,52 @@
 
                         {% for tweet in twitter.tweets %}
                             {% autoescape on %}
-                                <div class="box" id="tweetBox{{ forloop.counter0 }}" onclick='addCredibility(this, "{{ tweet.message|escapejs }}")'>
+                                <div class="box" id="tweetBox{{ forloop.counter0 }}"
+                                     onclick='addCredibility(this, "{{ tweet.message|escapejs }}")'>
                             {% endautoescape %}
-                                <article class="media">
-                                    <div class="media-left">
-                                        <figure class="image is-64x64">
-                                            <img src="{{ t_user.profile_image_url }}" alt="Image">
-                                        </figure>
-                                    </div>
-                                    <div class="media-content">
-                                        <div class="content">
-                                            <p>
-                                                <strong>{{ t_user.screen_name }}</strong>
-                                                <br>
-                                                {{ tweet.message }}
-                                            </p>
-                                        </div>
-                                        <nav class="level">
-                                            <div class="level-left">
-                                                <ul style="list-style: none">
-                                                    <li class="sentiment" style="display: inline; padding : 0 0.5em">
-                                                        <strong>Neutral</strong>: {{ tweet.scores.neu }}
-                                                    </li>
-                                                    <li style="display: inline; padding : 0 0.5em">
-                                                        <strong>Compound</strong>: {{ tweet.scores.compound }}
-                                                    </li>
-                                                    <li style="display: inline; padding : 0 0.5em">
-                                                        <strong style="color: red">Negative</strong>: {{ tweet.scores.negative }}
-                                                    </li>
-                                                    <li style="display: inline; padding : 0 0.5em">
-                                                        <strong style="color: navy">Positive</strong>: {{ tweet.scores.pos }}
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </nav>
-                                        <nav>
-                                            <hr>
-
-                                            <ul style="list-style: none;" id="credibility-list">
-                                            </ul>
-                                        </nav>
-                                        <nav id="url-nav">
-                                        </nav>
-                                    </div>
-                                </article>
+                        <article class="media">
+                            <div class="media-left">
+                                <figure class="image is-64x64">
+                                    <img src="{{ t_user.profile_image_url }}" alt="Image">
+                                </figure>
                             </div>
+                            <div class="media-content">
+                                <div class="content">
+                                    <p>
+                                        <strong>{{ t_user.screen_name }}</strong>
+                                        <br>
+                                        {{ tweet.message }}
+                                    </p>
+                                </div>
+                                <nav class="level">
+                                    <div class="level-left">
+                                        <ul style="list-style: none">
+                                            <li class="sentiment" style="display: inline; padding : 0 0.5em">
+                                                <strong>Neutral</strong>: {{ tweet.scores.neu }}
+                                            </li>
+                                            <li style="display: inline; padding : 0 0.5em">
+                                                <strong>Compound</strong>: {{ tweet.scores.compound }}
+                                            </li>
+                                            <li style="display: inline; padding : 0 0.5em">
+                                                <strong style="color: red">Negative</strong>: {{ tweet.scores.negative }}
+                                            </li>
+                                            <li style="display: inline; padding : 0 0.5em">
+                                                <strong style="color: navy">Positive</strong>: {{ tweet.scores.pos }}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </nav>
+                                <nav>
+                                    <hr>
+
+                                    <ul style="list-style: none;" id="credibility-list">
+                                    </ul>
+                                </nav>
+                                <nav id="url-nav">
+                                </nav>
+                            </div>
+                        </article>
+                        </div>
                         {% endfor %}
 
                     </div>
@@ -188,28 +189,46 @@
             });
         });
 
-    function addCredibility(elem, message) {
-        if ($(elem).find("#credibility-list").find("li").length == 0) {
-            $.get("api/search_score?search=" + message, function( data ) {
-                for (cred in data.scores) {
-                    $(elem).find("#credibility-list").append("<li style='display: inline; padding : 0 0.5em'>" + cred + ": " + data.scores[cred] + "</li>");
-                }
-                $(elem).find("#url-nav").append('<a style="padding: 0 0.5em" href="' + data.search_link + '">See Research</a>');
-            });
-        } else {
+        function addCredibility(elem, message) {
+            if ($(elem).find("#credibility-list").find("li").length == 0) {
+                $.get("api/search_score?search=" + message, function (data) {
+                    for (cred in data.scores) {
+                        $(elem).find("#credibility-list").append("<li style='display: inline; padding : 0 0.5em'>" + cred + ": " + data.scores[cred] + "</li>");
+                    }
+                    $(elem).find("#url-nav").append('<a style="padding: 0 0.5em" href="' + data.search_link + '">See Research</a>');
+                });
+            } else {
+            }
         }
-    }
 
         var politcal_data = null;
-        {% if t_user %}
+        {% if t_user and f_page%}
+            $.get("/political_description?id={{ t_user.screen_name }}&id_type=twitter", function (data, status) {
+                if (status == "success") {
+                    $("#show-information").removeClass("hidden");
+                    politcal_data = data;
+                } else {
+                    $.get("/political_description?id={{ f_page.name }}&id_type=facebook", function (data, st) {
+                        if (status == "success") {
+                            $("#show-information").removeClass("hidden");
+                            politcal_data = data;
+                        }
+                    });
+                }
+            });
+        {% elif t_user %}
             $.get("/political_description?id={{ t_user.screen_name }}&id_type=twitter", function (data) {
-                $("#show-information").removeClass("hidden");
-                politcal_data = data;
+                if (status == "success") {
+                    $("#show-information").removeClass("hidden");
+                    politcal_data = data;
+                }
             });
         {% elif f_page %}
             $.get("/political_description?id={{ f_page.name }}&id_type=facebook", function (data) {
-                $("#show-information").removeClass("hidden");
-                politcal_data = data;
+                if (status == "success") {
+                    $("#show-information").removeClass("hidden");
+                    politcal_data = data;
+                }
             });
         {% endif %}
 

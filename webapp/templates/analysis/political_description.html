@@ -1,4 +1,3 @@
-
 {% block body %}
     <section class="section">
         <div class="container">
@@ -38,7 +37,11 @@
                                                 {% if party.end %}
                                                     <p>{{ party.name }} from {{ party.start }} to {{ party.end }}</p>
                                                 {% else %}
-                                                    <p>{{ party.name }} from {{ party.start }}</p>
+                                                    <p>{{ party.name }}
+                                                        {% if party.start %} since
+                                                            {{ party.start }}
+                                                        {% endif %}
+                                                    </p>
                                                 {% endif %}
                                             </li>
                                         {% endfor %}
