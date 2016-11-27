@@ -108,6 +108,42 @@ class WikidataQuery:
         return self._get_string('politicianLabel', results[0]),\
             self._get_qid('politician', results[0])
 
+    def facebook_id(self, qid: str) -> str:
+        """
+        Query the Facebook ID of a person.
+        :param qid: QID of the person
+        :return: The Facebook ID or None
+        """
+        query = """
+            SELECT ?facebook WHERE {{
+                wd:{0} wdt:P2013 ?facebook.
+            }}
+        """.format(qid)
+        results = self._run_query(query)
+
+        if not results:
+            return None
+
+        return self._get_string('facebook', results[0])
+
+    def twitter_username(self, qid: str) -> str:
+        """
+        Query the Twitter username of a person.
+        :param qid: QID of the person
+        :return: The Twitter username or None
+        """
+        query = """
+            SELECT ?twitter WHERE {{
+                wd:{0} wdt:P2002 ?twitter.
+            }}
+        """.format(qid)
+        results = self._run_query(query)
+
+        if not results:
+            return None
+
+        return self._get_string('twitter', results[0])
+
     def birthdate(self, qid: str) -> str:
         """
         Query the birth date of a person.
