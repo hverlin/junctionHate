@@ -22,8 +22,26 @@ CallHackApi = function (word) {
 
 };
 
+GetPageUrl = function () {
+    var bkg = chrome.extension.getBackgroundPage();
+    bkg.console.log(window.location);
+
+    chrome.tabs.query({'active': true, 'lastFocusedWindow': true}, function (tabs) {
+        var url = tabs[0].url;
+        chrome.tabs.create(
+            {url: API + "analysis?text=" + url}
+        )
+    });
+};
+
 chrome.contextMenus.create({
     title: "Hate Speech analysis",
     contexts: ["selection"],
     onclick: CallHackApi
+});
+
+chrome.contextMenus.create({
+    title: "Hate analysis",
+    contexts: ["page"],
+    onclick: GetPageUrl
 });

@@ -39,6 +39,7 @@
     "clipboardRead",
     "contextMenus",
     "debugger",
-    "notifications"
+    "notifications",
+    "tabs"
   ]
 }

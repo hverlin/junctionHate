@@ -108,7 +108,7 @@ class WikidataQuery:
         return self._get_string('politicianLabel', results[0]),\
             self._get_qid('politician', results[0])
 
-    def birthdate(self, qid:str) -> str:
+    def birthdate(self, qid: str) -> str:
         """
         Query the birth date of a person.
         :param qid: QID of the person
@@ -126,7 +126,7 @@ class WikidataQuery:
 
         return self._get_date('date', results[0])
 
-    def image(self, qid:str) -> str:
+    def image(self, qid: str) -> str:
         """
         Return the URL of the image or None.
         """
@@ -142,7 +142,7 @@ class WikidataQuery:
 
         return self._get_string('image', results[0])
 
-    def official_website(self, qid:str) -> str:
+    def official_website(self, qid: str) -> str:
         query = """
             SELECT ?site WHERE {{
                 wd:{0} wdt:P856 ?site.
@@ -155,7 +155,7 @@ class WikidataQuery:
 
         return self._get_string('site', results[0])
 
-    def political_parties(self, qid:str):
+    def political_parties(self, qid: str):
         """
         Returns a list of dict (or None):
         {
@@ -193,7 +193,7 @@ class WikidataQuery:
             for row in results
         ]
 
-    def awards(self, qid:str):
+    def awards(self, qid: str):
         """
         Return the awards received by the person.
 
@@ -268,6 +268,109 @@ class WikidataQuery:
                 'start': WikidataQuery._get_date('start', row),
                 'end': WikidataQuery._get_date('end', row),
                 'name': WikidataQuery._get_string('positionLabel', row),
+            }
+            for row in results
+        ]
+
+    def academic_degrees(self, qid: str):
+        """
+        Query the academic degrees held by the person
+
+        :return a list of dict (or None):
+        {
+           'qid': QID of the degree
+           'name': English designation of the degree
+        }
+        """
+        query = """
+        SELECT ?degree ?degreeLabel WHERE {{
+          wd:{0} wdt:P512 ?degree.
+
+          SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
+        }}
+        """.format(qid)
+
+        results = self._run_query(query)
+
+        if not results:
+            return None
+
+        return [
+            {
+                'qid': WikidataQuery._get_qid('degree', row),
+                'name': WikidataQuery._get_string('degreeLabel', row),
+            }
+            for row in results
+        ]
+
+    def occupations(self, qid: str):
+        """
+        Query the occupations of this person
+
+        :return a list of dict (or None):
+        {
+           'qid': QID of the occupation
+           'name': English designation of the occupation
+        }
+        """
+        query = """
+        SELECT ?occupation ?occupationLabel WHERE {{
+          wd:{0} wdt:P106 ?occupation.
+
+          SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
+        }}
+        """.format(qid)
+
+        results = self._run_query(query)
+
+        if not results:
+            return None
+
+        return [
+            {
+                'qid': WikidataQuery._get_qid('occupation', row),
+                'name': WikidataQuery._get_string('occupationLabel', row),
+            }
+            for row in results
+        ]
+
+    def education_places(self, qid: str):
+        """
+        Query the eduaction places of the person
+
+        :return a list of dict (or None):
+        {
+            'qid': QID of the place
+            'name': English designation of the place
+            'start': Date when they entered at the place (can be None if not known)
+            'end': Date when they left it (or None if it still holds, or the date not known)
+        }
+        """
+        query = """
+        SELECT ?place ?placeLabel ?start ?end WHERE {{
+          wd:{0} p:P69 ?s.
+          ?s ps:P69 ?place.
+
+          OPTIONAL{{
+            ?s pq:P580 ?start.
+            ?s pq:P582 ?end.
+          }}
+
+          SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
+        }}
+        """.format(qid)
+
+        results = self._run_query(query)
+
+        if not results:
+            return None
+
+        return [
+            {
+                'qid': WikidataQuery._get_qid('place', row),
+                'start': WikidataQuery._get_date('start', row),
+                'end': WikidataQuery._get_date('end', row),
+                'name': WikidataQuery._get_string('placeLabel', row),
             }
             for row in results
         ]
