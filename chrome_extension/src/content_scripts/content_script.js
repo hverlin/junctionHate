@@ -1,5 +1,7 @@
 (function (js) {
+
     const addBar = function (user) {
+        console.log("bar added");
         js(document.body)
             .prepend(`
                 <div id="hack-bar-button" class="hack-bar-button" >
@@ -24,4 +26,8 @@
     }
 
 })(jQuery);
+
+
+
+
 

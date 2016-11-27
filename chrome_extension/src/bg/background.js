@@ -2,7 +2,7 @@
 //     "sample_setting": "This is how you use Store.js to remember values"
 // });
 
-var API = "http://localhost:8000/api/";
+var API = "http://hackhate.huguesverlin.fr/";
 
 //example of using a message handler from the inject scripts
 chrome.extension.onMessage.addListener(
