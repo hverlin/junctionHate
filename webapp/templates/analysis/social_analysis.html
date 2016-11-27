@@ -58,14 +58,15 @@
                                 <nav class="level">
                                     <div class="level-left">
                                         <ul style="list-style: none">
+                                            <li style="display: inline; padding : 0 0.5em">
+                                                <strong style="color: red">Compound</strong>: {{ tweet.scores.compound }}
+                                            </li>
                                             <li class="sentiment" style="display: inline; padding : 0 0.5em">
                                                 <strong>Neutral</strong>: {{ tweet.scores.neu }}
                                             </li>
+
                                             <li style="display: inline; padding : 0 0.5em">
-                                                <strong>Compound</strong>: {{ tweet.scores.compound }}
-                                            </li>
-                                            <li style="display: inline; padding : 0 0.5em">
-                                                <strong style="color: red">Negative</strong>: {{ tweet.scores.negative }}
+                                                <strong>Negative</strong>: {{ tweet.scores.negative }}
                                             </li>
                                             <li style="display: inline; padding : 0 0.5em">
                                                 <strong style="color: navy">Positive</strong>: {{ tweet.scores.pos }}
@@ -97,44 +98,44 @@
                                 <div class="box" id="facebookBox{{ forloop.counter0 }}"
                                      onclick="addCredibility(this, '{{ post.message|escapejs }}')">
                             {% endautoescape %}
-                                <article class="media">
-                                    <div class="media-content">
-                                        <div class="content">
-                                            <p>
-                                                <strong>{{ f_page.username }}</strong>
-                                                <br>
-                                                {{ post.message }}
-                                            </p>
-                                        </div>
-                                        <nav class="level">
-                                            <div class="level-left">
-                                                <ul style="list-style: none">
-                                                    <li class="sentiment" style="display: inline; padding : 0 0.5em">
-                                                        <strong>Neutral</strong>: {{ post.scores.neu }}
-                                                    </li>
-                                                    <li style="display: inline; padding : 0 0.5em">
-                                                        <strong>Compound</strong>: {{ post.scores.compound }}
-                                                    </li>
-                                                    <li style="display: inline; padding : 0 0.5em">
-                                                        <strong style="color: red">Negative</strong>: {{ post.scores.negative }}
-                                                    </li>
-                                                    <li style="display: inline; padding : 0 0.5em">
-                                                        <strong style="color: navy">Positive</strong>: {{ post.scores.pos }}
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </nav>
-
-                                        <nav>
-                                            <hr>
-                                            <ul style="list-style: none;" id="credibility-list">
-                                            </ul>
-                                        </nav>
-                                        <nav id="url-nav">
-                                        </nav>
+                        <article class="media">
+                            <div class="media-content">
+                                <div class="content">
+                                    <p>
+                                        <strong>{{ f_page.username }}</strong>
+                                        <br>
+                                        {{ post.message }}
+                                    </p>
+                                </div>
+                                <nav class="level">
+                                    <div class="level-left">
+                                        <ul style="list-style: none">
+                                            <li style="display: inline; padding : 0 0.5em">
+                                                <strong style="color: red">Compound</strong>: {{ post.scores.compound }}
+                                            </li>
+                                            <li class="sentiment" style="display: inline; padding : 0 0.5em">
+                                                <strong>Neutral</strong>: {{ post.scores.neu }}
+                                            </li>
+                                            <li style="display: inline; padding : 0 0.5em">
+                                                <strong>Negative</strong>: {{ post.scores.negative }}
+                                            </li>
+                                            <li style="display: inline; padding : 0 0.5em">
+                                                <strong>Positive</strong>: {{ post.scores.pos }}
+                                            </li>
+                                        </ul>
                                     </div>
-                                </article>
+                                </nav>
+
+                                <nav>
+                                    <hr>
+                                    <ul style="list-style: none;" id="credibility-list">
+                                    </ul>
+                                </nav>
+                                <nav id="url-nav">
+                                </nav>
                             </div>
+                        </article>
+                        </div>
                         {% endfor %}
                     </div>
                 {% endif %}
