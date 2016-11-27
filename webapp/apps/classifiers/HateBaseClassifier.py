@@ -46,12 +46,14 @@ class HateBaseClassifier:
         :return: boolean
         """
         word = str.lower(word)
+        word = word.strip('"').strip("'")
         reg_w = re.compile("^{0};|^{0}$".format(re.escape(word)))
         return len(self.hatebase[(self.hatebase["variants"].str.match(reg_w, case="False", na=False)) |
                                  (self.hatebase["vocabulary"].str.match(reg_w, case="False"))]) > 0
 
     def get_hate_word_info(self, word):
         word = str.lower(word)
+        word = word.strip('"').strip("'")
         reg_w = re.compile("^{0};|^{0}$".format(re.escape(word)))
         df = self.hatebase[(self.hatebase["variants"].str.match(reg_w, case="False", na=False)) |
                            (self.hatebase["vocabulary"].str.match(reg_w, case="False"))]
