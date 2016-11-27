@@ -3,6 +3,7 @@ import re
 from bs4 import BeautifulSoup
 
 
+
 class DuckduckgoSearch:
     def __init__(self, search):
         self.search = search.replace(" ", "+")
@@ -33,3 +34,5 @@ class DuckduckgoSearch:
                 click_bait += 1
 
         return click_bait
+
+

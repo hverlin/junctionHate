@@ -11,13 +11,11 @@ from apps.classifiers.HateBaseClassifier import HateBaseClassifier
 from apps.classifiers.NltkClassifier import NltkClassifier
 from apps.classifiers.WotChecker import WotChecker
 from apps.fact_checker.DuckduckgoSearch import DuckduckgoSearch
-from apps.fact_checker import WebSiteCredibility
 from apps.text_interface import TextFromFacebook as Facebook
 from apps.text_interface import TextFromTwitter as Twitter
 from apps.text_interface.TextFromFacebook import TextFromFacebook
 from apps.text_interface.TextFromTwitter import TextFromTwitter
-from apps.fact_checker import DuckduckgoSearch as DuckSearch
-from apps.fact_checker import WebSiteCredibility
+from apps.fact_checker.WebSiteCredibility import WebSiteCredibility
 from newspaper import Article
 
 
@@ -179,7 +177,8 @@ def render_analysis_text(request, text, url):
         ds = DuckduckgoSearch(search=text)
 
     website_list = ds.get_link_list()
-    credibility = WebSiteCredibility.compute_score_for_website_liste(website_list=website_list)
+    wsc = WebSiteCredibility(website_list=website_list)
+    credibility = wsc.compute_score_for_website_liste()
 
     click_bait = ds.estimate_number_click_bait()
     credibility["CLICKBAIT"] += click_bait
@@ -265,7 +264,8 @@ def search_score(request, format=None):
     ds = DuckduckgoSearch(search=search)
 
     website_list = ds.get_link_list()
-    scores = WebSiteCredibility.compute_score_for_website_liste(website_list=website_list)
+    wsc = WebSiteCredibility(website_list=website_list)
+    scores = wsc.compute_score_for_website_liste()
 
     click_bait = ds.estimate_number_click_bait()
     scores["CLICKBAIT"] += click_bait
