@@ -45,16 +45,17 @@ class HateBaseClassifier:
         :param word:
         :return: boolean
         """
-        reg_w = "^{0};|^{0}$".format(re.escape(word))
-        return len(self.hatebase[(self.hatebase["variants"].str.match(reg_w, na=False)) |
-                                 (self.hatebase["vocabulary"] == word)]) > 0
+        word = str.lower(word)
+        reg_w = re.compile("^{0};|^{0}$".format(re.escape(word)))
+        return len(self.hatebase[(self.hatebase["variants"].str.match(reg_w, case="False", na=False)) |
+                                 (self.hatebase["vocabulary"].str.match(reg_w, case="False"))]) > 0
 
     def get_hate_word_info(self, word):
-        reg_w = "^{0};|^{0}$".format(re.escape(word))
-        df = self.hatebase[(self.hatebase["variants"].str.match(reg_w, na=False)) |
-                           (self.hatebase["vocabulary"] == word)]
+        word = str.lower(word)
+        reg_w = re.compile("^{0};|^{0}$".format(re.escape(word)))
+        df = self.hatebase[(self.hatebase["variants"].str.match(reg_w, case="False", na=False)) |
+                           (self.hatebase["vocabulary"].str.match(reg_w, case="False"))]
         if not df.empty:
             df = df.iloc[0]
             return {'word': word, 'meaning': df["meaning"], 'offensiveness': df["offensiveness"]}
-
 
