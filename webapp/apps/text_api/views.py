@@ -174,11 +174,13 @@ def render_analysis_text(request, text, url):
         keys.append(key)
 
     if url:
-        website_list, duck_search = DuckSearch.search_on_html_duckduckgo(search=url)
+        website_list, duck_search,click_bait = DuckSearch.search_on_html_duckduckgo(search=url)
     else:
-        website_list, duck_search = DuckSearch.search_on_html_duckduckgo(search=text)
+        website_list, duck_search,click_bait = DuckSearch.search_on_html_duckduckgo(search=text)
 
     credibility = WebSiteCredibility.compute_score_for_website_liste(website_list=website_list)
+    if click_bait:
+        credibility["CLICKBAIT"] += click_bait
     return render(request, 'analysis/text_analysis.html',
                   {
                       "text": text,
