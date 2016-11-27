@@ -5,7 +5,7 @@
         js(document.body)
             .prepend(`
                 <div id="hack-bar-button" class="hack-bar-button" >
-                    <a href="http://localhost:8000/social_analysis?text=${user}" target="_blank">Analyse</a>
+                    <a href="http://hackhate.huguesverlin.fr/social_analysis?text=${user}" target="_blank">Analyse</a>
                 </div>
                 <script></script>
                 `);
