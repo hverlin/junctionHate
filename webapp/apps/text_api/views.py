@@ -12,6 +12,7 @@ from apps.classifiers.NltkClassifier import NltkClassifier
 from apps.classifiers.WotChecker import WotChecker
 from apps.fact_checker import DuckduckgoSearch as DuckSearch
 from apps.fact_checker import WebSiteCredibility
+from apps.text_api.models import SocialSearch
 from apps.text_interface import TextFromFacebook as Facebook
 from apps.text_interface import TextFromTwitter as Twitter
 from apps.text_interface.TextFromFacebook import TextFromFacebook
@@ -216,6 +217,12 @@ def social_analysis(request):
     stats["labels"] = mark_safe(["min", "mean", "max"]),
 
     if t_user and f_page:
+
+        ss, created = SocialSearch.objects.get_or_create(search=text.title())
+        ss.number += 1
+        ss.picture_url = t_user["profile_image_url"]
+        ss.save()
+
         stats["scores"] = [
             np.min([twitter_stats["stats"]["scores"][0], facebook_stats["stats"]["scores"][0]]),
             np.mean([twitter_stats["stats"]["scores"][1], facebook_stats["stats"]["scores"][1]]),
@@ -242,7 +249,7 @@ def social_analysis(request):
 def search_page(request):
     return render(request, 'analysis/search.html',
                   {
-
+                      "searchs": SocialSearch.objects.all()[:10]
                   })
 
 
