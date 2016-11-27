@@ -190,7 +190,8 @@
         });
 
         function addCredibility(elem, message) {
-            if ($(elem).find("#credibility-list").find("li").length == 0) {
+            $(elem).find("#credibility-list").append("<li style=none' />");
+            if ($(elem).find("#credibility-list").find("li").length <= 1) {
                 $.get("api/search_score?search=" + message, function (data) {
                     for (cred in data.scores) {
                         $(elem).find("#credibility-list").append("<li style='display: inline; padding : 0 0.5em'>" + cred + ": " + data.scores[cred] + "</li>");
