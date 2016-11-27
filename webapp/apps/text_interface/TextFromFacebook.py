@@ -4,11 +4,13 @@ import scipy.stats
 from apps.classifiers import NltkClassifier
 from apps.fact_checker import DuckduckgoSearch as DuckSearch
 from apps.fact_checker import WebSiteCredibility
+from junction_hate import settings_local as st
+
 
 class TextFromFacebook():
     def __init__(self):
-        app_id = "350491891978824"
-        app_secret = "7ac945d57ec6ba7396bd770dd5474ab7"
+        app_id = st.FACEBOOK_app_id
+        app_secret = st.FACEBOOK_app_secret
 
         self.graph = GraphAPI(oauth_token=app_id + "|" + app_secret)
 
@@ -98,10 +100,8 @@ class TextFromFacebook():
 
 if __name__ == '__main__':
     facebook = TextFromFacebook()
-    #print(facebook.search_first_page("trump"))
-    # print(facebook.search_first_page("DonaldTrump")['id'])
     # print(facebook.get_nltk_statistic("153080620724", 10))
-    #print(facebook.get_nltk_statistic("barackobama", 10))
+    # print(facebook.get_nltk_statistic("barackobama", 10))
     facebook = TextFromFacebook()
     f_page = facebook.search_first_page(search_page="lepen")
     print(f_page['id'])

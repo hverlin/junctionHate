@@ -71,7 +71,7 @@ class WotResult:
 
 class WotChecker:
     def __init__(self):
-        self._private_key = 'f4c9175c272adff6de0e968cecfebb51d0acbf83'
+        self._private_key = ''
         self._api_url = 'http://api.mywot.com/0.4/public_link_json2'
 
     def test_websites_concatenated(self, hosts):
@@ -118,4 +118,3 @@ class WotChecker:
         hosts = ''.join(map(lambda s: s + '/', hosts))
 
         return self.test_websites_concatenated(hosts)
-

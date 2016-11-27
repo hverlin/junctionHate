@@ -3,19 +3,13 @@ DEBUG = False
 # modifier la clef secrète
 SECRET_KEY = '#xinfvd=+#^del$@he^ms46$$2mrf!)+4i6icn62fx&t+4p2^a'
 
-# exemple de configuration de bases de données
+TWITTER_consumer_key = ''
+TWITTER_consumer_secret = ''
+TWITTER_access_token = ''
+TWITTER_access_token_secret = ''
+FACEBOOK_app_id = ""
+FACEBOOK_app_secret = ""
 
-# PostgreSQL
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'simonetti',
-        'HOST': 'localhost',
-        'PASSWORD': 'simonetti',
-        'PORT': '5432',
-        'USER': 'simonetti',
-    }
-}
 
 # SqlLite3
 import os
@@ -28,7 +22,7 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ["url_backend", "url_frontend"]
+ALLOWED_HOSTS = ["*"]
 
 # configuration Email smtp
 EMAIL_USE_TLS = True

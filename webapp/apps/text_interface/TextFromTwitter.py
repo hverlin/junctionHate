@@ -4,14 +4,15 @@ import scipy.stats
 from django.utils.safestring import mark_safe
 
 from apps.classifiers import NltkClassifier
+from junction_hate import settings_local as st
 
 
 class TextFromTwitter():
     def __init__(self):
-        consumer_key = 'VqLtcUiHKrWy8YXfgWODFyFoe'
-        consumer_secret = '7YNxcOhtHRjpq1ybx6RRE28WId2028z6S2y69L3bN6rmJJggx1'
-        access_token = '140961368-NSM1xsEFmgIcJre5doFnV50JtAc2JjBdI46GB0nf'
-        access_token_secret = 'fykaXl80SYQrG3TbePVZAGmuT6zyrd8fQl0f3BLtwz2S2'
+        consumer_key = st.TWITTER_consumer_key
+        consumer_secret = st.TWITTER_consumer_secret
+        access_token = st.TWITTER_access_token
+        access_token_secret = st.TWITTER_access_token_secret
 
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 
