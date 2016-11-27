@@ -93,8 +93,10 @@
                     <div class="column">
                         <h2 class="title is-5 has-text-centered">Facebook: {{ f_page.name }} </h2>
                         {% for post in facebook.posts %}
-                            <div class="box" id="facebookBox{{ forloop.counter0 }}"
-                                 onclick="addCredibility(this, '{{ post.message }}')">
+                            {% autoescape on %}
+                                <div class="box" id="facebookBox{{ forloop.counter0 }}"
+                                     onclick="addCredibility(this, '{{ post.message|escapejs }}')">
+                            {% endautoescape %}
                                 <article class="media">
                                     <div class="media-content">
                                         <div class="content">
