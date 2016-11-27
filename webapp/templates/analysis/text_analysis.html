@@ -15,6 +15,32 @@
 
                     <canvas id="myChart" width="100%" height="80px"></canvas>
 
+
+                    {% if bad_words %}
+                        <hr style="margin: 10px 0">
+
+                        <h2 class="title is-5">Hate words:</h2>
+                        <table class="table is-striped">
+                            <tr>
+                                <th>Word</th>
+                                <th>Meaning</th>
+                                <th>Offensiveness</th>
+                            </tr>
+
+                            {% for word in bad_words %}
+                                <tr>
+                                    <td>
+                                        <a href="https://www.hatebase.org/vocabulary/{{ word.word }}" target="_blank">
+                                            {{ word.word }}
+                                        </a>
+                                    </td>
+                                    <td>{{ word.meaning }}</td>
+                                    <td>{{ word.offensiveness|floatformat:2|intcomma }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endif %}
+
                     <hr style="margin: 10px 0">
 
                     <h2 class="title is-5">Credibility</h2>
@@ -50,32 +76,6 @@
                 <div class="column is-half">
                     <h2 class="title is-5">Text:</h2>
                     <p style="text-align: justify; max-width: 800px"> {{ text }}</p>
-
-                    {% if bad_words %}
-                        <hr>
-
-                        <h2 class="title is-5">Hate words:</h2>
-                        <table class="table is-striped">
-                            <tr>
-                                <th>Word</th>
-                                <th>Meaning</th>
-                                <th>Offensiveness</th>
-                            </tr>
-
-                            {% for word in bad_words %}
-                                <tr>
-                                    <td>
-                                        <a href="https://www.hatebase.org/vocabulary/{{ word.word }}" target="_blank">
-                                            {{ word.word }}
-                                        </a>
-                                    </td>
-                                    <td>{{ word.meaning }}</td>
-                                    <td>{{ word.offensiveness|floatformat:2|intcomma }}</td>
-                                </tr>
-                            {% endfor %}
-                        </table>
-                    {% endif %}
-
 
                 </div>
 
