@@ -20,5 +20,4 @@ def compute_score_for_website_liste(website_list):
             type = types[res.type_id]
             scores[type] += 1
 
-    print(scores)
     return scores

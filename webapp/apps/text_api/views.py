@@ -10,7 +10,7 @@ from apps.WikidataQuery import WikidataQuery as Wq
 from apps.classifiers.HateBaseClassifier import HateBaseClassifier
 from apps.classifiers.NltkClassifier import NltkClassifier
 from apps.classifiers.WotChecker import WotChecker
-from apps.fact_checker import DuckduckgoSearch as DuckSearch
+from apps.fact_checker.DuckduckgoSearch import DuckduckgoSearch
 from apps.fact_checker import WebSiteCredibility
 from apps.text_api.models import SocialSearch
 from apps.text_interface import TextFromFacebook as Facebook
@@ -175,11 +175,17 @@ def render_analysis_text(request, text, url):
         keys.append(key)
 
     if url:
-        website_list, duck_search = DuckSearch.search_on_html_duckduckgo(search=url)
+        ds = DuckduckgoSearch(search=url)
     else:
-        website_list, duck_search = DuckSearch.search_on_html_duckduckgo(search=text)
+        ds = DuckduckgoSearch(search=text)
 
+    website_list = ds.get_link_list()
     credibility = WebSiteCredibility.compute_score_for_website_liste(website_list=website_list)
+
+    click_bait = ds.estimate_number_click_bait()
+    credibility["CLICKBAIT"] += click_bait
+
+    duck_search = ds.get_request()
     return render(request, 'analysis/text_analysis.html',
                   {
                       "text": text,
@@ -262,8 +268,17 @@ def search_score(request, format=None):
     - search: search string
     """
     search = request.query_params.get("search")
-    website_list, duck_search = DuckSearch.search_on_html_duckduckgo(search=search)
+
+    ds = DuckduckgoSearch(search=search)
+
+    website_list = ds.get_link_list()
     scores = WebSiteCredibility.compute_score_for_website_liste(website_list=website_list)
+
+    click_bait = ds.estimate_number_click_bait()
+    scores["CLICKBAIT"] += click_bait
+
+    duck_search = ds.get_request()
+
     return Response({
         "search": search,
         "scores": scores,
