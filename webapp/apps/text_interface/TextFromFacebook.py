@@ -2,7 +2,8 @@ from django.utils.safestring import mark_safe
 from facepy import GraphAPI
 import scipy.stats
 from apps.classifiers import NltkClassifier
-
+from apps.fact_checker import DuckduckgoSearch as DuckSearch
+from apps.fact_checker import WebSiteCredibility
 
 class TextFromFacebook():
     def __init__(self):
@@ -64,21 +65,24 @@ class TextFromFacebook():
         posts = self.get_posts_from_page(id, post_number)
         posts_with_scores = []
         compound_scores = []
-        for post in posts:
-            scores = classifier.analyse_text(post['message'])
-            posts_with_scores.append({
-                'message': post['message'],
-                'scores': scores
-            })
-            compound_scores.append(scores['compound'])
-        stats = scipy.stats.describe(compound_scores)
-        return {
-            "posts": posts_with_scores,
-            "stats": {
-                "labels": mark_safe(["min", "mean", "max"]),
-                "scores": [stats.minmax[0], stats.mean, stats.minmax[1]],
+        if len(posts) > 0:
+            for post in posts:
+                scores = classifier.analyse_text(post['message'])
+                posts_with_scores.append({
+                    'message': post['message'],
+                    'scores': scores
+                })
+                compound_scores.append(scores['compound'])
+            stats = scipy.stats.describe(compound_scores)
+            return {
+                "posts": posts_with_scores,
+                "stats": {
+                    "labels": mark_safe(["min", "mean", "max"]),
+                    "scores": [stats.minmax[0], stats.mean, stats.minmax[1]],
+                }
             }
-        }
+        else:
+            return None
 
     def search_first_page(self, search_page):
         request = "search?q=" + search_page + "&type=page"
@@ -94,6 +98,13 @@ class TextFromFacebook():
 
 if __name__ == '__main__':
     facebook = TextFromFacebook()
-    print(facebook.search_first_page("trump"))
-    '''print(facebook.get_nltk_statistic("DonaldTrump", 10))
-    print(facebook.get_nltk_statistic("barackobama", 10))'''
+    #print(facebook.search_first_page("trump"))
+    # print(facebook.search_first_page("DonaldTrump")['id'])
+    # print(facebook.get_nltk_statistic("153080620724", 10))
+    #print(facebook.get_nltk_statistic("barackobama", 10))
+    facebook = TextFromFacebook()
+    f_page = facebook.search_first_page(search_page="lepen")
+    print(f_page['id'])
+    if f_page is not None and f_page['id'] is not None:
+        facebook_stats = facebook.get_nltk_statistic(id=f_page["id"])
+        print(facebook_stats)

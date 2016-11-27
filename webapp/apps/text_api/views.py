@@ -10,14 +10,16 @@ from apps.WikidataQuery import WikidataQuery as Wq
 from apps.classifiers.HateBaseClassifier import HateBaseClassifier
 from apps.classifiers.NltkClassifier import NltkClassifier
 from apps.classifiers.WotChecker import WotChecker
-from apps.fact_checker import DuckduckgoSearch as DuckSearch
+from apps.fact_checker.DuckduckgoSearch import DuckduckgoSearch
 from apps.fact_checker import WebSiteCredibility
+from apps.text_api.models import SocialSearch
 from apps.text_interface import TextFromFacebook as Facebook
 from apps.text_interface import TextFromTwitter as Twitter
 from apps.text_interface.TextFromFacebook import TextFromFacebook
 from apps.text_interface.TextFromTwitter import TextFromTwitter
 from apps.fact_checker import DuckduckgoSearch as DuckSearch
 from apps.fact_checker import WebSiteCredibility
+from newspaper import Article
 
 
 @api_view()
@@ -146,14 +148,22 @@ def wot_checking(request):
 
 
 def text_analysis_page(request):
+    url = None
     text = request.GET.get('text')
     if not text:
         return JsonResponse({"error": "please provide text"})
 
-    return render_analysis_text(request, text)
+    if "http" in text or "www" in text:
+        url = text
+        article = Article(text)
+        article.download()
+        article.parse()
+        text = article.text
+
+    return render_analysis_text(request, text, url)
 
 
-def render_analysis_text(request, text):
+def render_analysis_text(request, text, url):
     nltk = NltkClassifier()
 
     analysis = nltk.analyse_text(text)
@@ -164,8 +174,18 @@ def render_analysis_text(request, text):
         arr.append(item)
         keys.append(key)
 
-    website_list, duck_search = DuckSearch.search_on_html_duckduckgo(search=text)
+    if url:
+        ds = DuckduckgoSearch(search=url)
+    else:
+        ds = DuckduckgoSearch(search=text)
+
+    website_list = ds.get_link_list()
     credibility = WebSiteCredibility.compute_score_for_website_liste(website_list=website_list)
+
+    click_bait = ds.estimate_number_click_bait()
+    credibility["CLICKBAIT"] += click_bait
+
+    duck_search = ds.get_request()
     return render(request, 'analysis/text_analysis.html',
                   {
                       "text": text,
@@ -203,6 +223,12 @@ def social_analysis(request):
     stats["labels"] = mark_safe(["min", "mean", "max"]),
 
     if t_user and f_page:
+
+        ss, created = SocialSearch.objects.get_or_create(search=text.title())
+        ss.number += 1
+        ss.picture_url = t_user["profile_image_url"]
+        ss.save()
+
         stats["scores"] = [
             np.min([twitter_stats["stats"]["scores"][0], facebook_stats["stats"]["scores"][0]]),
             np.mean([twitter_stats["stats"]["scores"][1], facebook_stats["stats"]["scores"][1]]),
@@ -229,7 +255,7 @@ def social_analysis(request):
 def search_page(request):
     return render(request, 'analysis/search.html',
                   {
-
+                      "searchs": SocialSearch.objects.all()[:10]
                   })
 
 
@@ -242,8 +268,17 @@ def search_score(request, format=None):
     - search: search string
     """
     search = request.query_params.get("search")
-    website_list, duck_search = DuckSearch.search_on_html_duckduckgo(search=search)
+
+    ds = DuckduckgoSearch(search=search)
+
+    website_list = ds.get_link_list()
     scores = WebSiteCredibility.compute_score_for_website_liste(website_list=website_list)
+
+    click_bait = ds.estimate_number_click_bait()
+    scores["CLICKBAIT"] += click_bait
+
+    duck_search = ds.get_request()
+
     return Response({
         "search": search,
         "scores": scores,
@@ -288,7 +323,4 @@ def political_description(request):
                           "poli_political_parties": wikidata.political_parties(qid)
                       })
     else:
-        return render(request, 'analysis/political_description.html',
-                      {
-
-                      })
+        return JsonResponse({"error": "not found"}, status=404)
