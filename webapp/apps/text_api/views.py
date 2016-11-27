@@ -323,7 +323,4 @@ def political_description(request):
                           "poli_political_parties": wikidata.political_parties(qid)
                       })
     else:
-        return render(request, 'analysis/political_description.html',
-                      {
-
-                      })
+        return JsonResponse({"error": "not found"}, status=404)
