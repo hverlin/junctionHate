@@ -18,6 +18,7 @@ from apps.text_interface.TextFromFacebook import TextFromFacebook
 from apps.text_interface.TextFromTwitter import TextFromTwitter
 from apps.fact_checker import DuckduckgoSearch as DuckSearch
 from apps.fact_checker import WebSiteCredibility
+from newspaper import Article
 
 
 @api_view()
@@ -146,14 +147,22 @@ def wot_checking(request):
 
 
 def text_analysis_page(request):
+    url = None
     text = request.GET.get('text')
     if not text:
         return JsonResponse({"error": "please provide text"})
 
-    return render_analysis_text(request, text)
+    if "http" in text or "www" in text:
+        url = text
+        article = Article(text)
+        article.download()
+        article.parse()
+        text = article.text
+
+    return render_analysis_text(request, text, url)
 
 
-def render_analysis_text(request, text):
+def render_analysis_text(request, text, url):
     nltk = NltkClassifier()
 
     analysis = nltk.analyse_text(text)
@@ -164,7 +173,11 @@ def render_analysis_text(request, text):
         arr.append(item)
         keys.append(key)
 
-    website_list, duck_search = DuckSearch.search_on_html_duckduckgo(search=text)
+    if url:
+        website_list, duck_search = DuckSearch.search_on_html_duckduckgo(search=url)
+    else:
+        website_list, duck_search = DuckSearch.search_on_html_duckduckgo(search=text)
+
     credibility = WebSiteCredibility.compute_score_for_website_liste(website_list=website_list)
     return render(request, 'analysis/text_analysis.html',
                   {
